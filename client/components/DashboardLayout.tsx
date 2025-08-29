@@ -218,9 +218,15 @@ export default function DashboardLayout({
               </h2>
             </div>
 
-            {/* Right side actions could go here */}
             <div className="flex items-center gap-2">
-              {/* Notifications, quick actions, etc. */}
+              <span className="text-sm text-muted-foreground hidden sm:block">
+                {new Date().toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </span>
             </div>
           </div>
         </header>
