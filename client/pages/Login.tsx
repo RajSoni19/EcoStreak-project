@@ -26,11 +26,14 @@ export default function Login() {
     // Simulate login API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // For demo purposes, navigate based on email
+    // For demo purposes, navigate based on email pattern
     if (email.includes("admin")) {
       navigate("/admin/dashboard");
-    } else {
+    } else if (email.includes("ngo")) {
       navigate("/ngo/dashboard");
+    } else {
+      // Default to user dashboard for regular users
+      navigate("/user/dashboard");
     }
 
     setIsLoading(false);
@@ -148,6 +151,7 @@ export default function Login() {
               <p className="font-medium mb-1">Demo Credentials:</p>
               <p>Admin: admin@ecoconnect.com</p>
               <p>NGO: ngo@example.com</p>
+              <p>User: user@example.com</p>
               <p>Password: demo123</p>
             </div>
           </CardContent>

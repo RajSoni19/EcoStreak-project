@@ -40,7 +40,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          {/* Default redirect to login */}
+          {/* Default redirect to login for authentication */}
           <Route path="/" element={<Navigate to="/login" replace />} />
 
           {/* Authentication Routes */}

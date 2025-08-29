@@ -108,7 +108,7 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex">
       {/* Mobile Sidebar Backdrop */}
       {sidebarOpen && (
         <div
@@ -122,7 +122,7 @@ export default function DashboardLayout({
         className={`
         fixed left-0 top-0 h-full w-64 bg-sidebar border-r border-sidebar-border z-50 transform transition-transform duration-200 ease-in-out
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-        lg:translate-x-0 lg:static lg:z-auto
+        lg:relative lg:translate-x-0 lg:z-auto
       `}
       >
         <div className="flex flex-col h-full">
@@ -225,7 +225,7 @@ export default function DashboardLayout({
       </aside>
 
       {/* Main Content */}
-      <div className="lg:ml-64">
+      <div className="flex-1 min-w-0">
         {/* Top Bar */}
         <header className="bg-card border-b border-border sticky top-0 z-30">
           <div className="flex items-center justify-between px-4 py-3">

@@ -199,7 +199,7 @@ export default function Communities() {
   const joinedCount = joinedCommunities.length;
 
   return (
-    <DashboardLayout userRole="user" userName="Alex Johnson">
+    <UserLayout>
       <div className="space-y-6">
         {/* Header */}
         <div>
@@ -445,6 +445,6 @@ export default function Communities() {
           </Card>
         )}
       </div>
-    </DashboardLayout>
+    </UserLayout>
   );
 }

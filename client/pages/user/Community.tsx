@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import DashboardLayout from "@/components/DashboardLayout";
+import UserLayout from "@/components/UserLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -217,7 +217,7 @@ export default function Community() {
   };
 
   return (
-    <DashboardLayout userRole="user" userName="Alex Johnson">
+    <UserLayout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
@@ -578,8 +578,8 @@ export default function Community() {
               </Button>
             </DialogFooter>
           </DialogContent>
-        </Dialog>
-      </div>
-    </DashboardLayout>
-  );
-}
+                 </Dialog>
+       </div>
+     </UserLayout>
+   );
+ }
