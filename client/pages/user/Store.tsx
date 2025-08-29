@@ -204,8 +204,8 @@ export default function Store() {
   };
 
   return (
-    <DashboardLayout userRole="user" userName="Alex Johnson">
-      <div className="space-y-6">
+    <UserLayout>
+      <div className="p-6 space-y-6">
         {/* Header with Points Balance */}
         <div className="bg-gradient-to-r from-eco-sage/10 via-eco-sky/5 to-eco-leaf/10 rounded-xl p-6">
           <div className="flex items-center justify-between">
@@ -452,6 +452,6 @@ export default function Store() {
           </DialogContent>
         </Dialog>
       </div>
-    </DashboardLayout>
+    </UserLayout>
   );
 }
