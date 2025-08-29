@@ -11,6 +11,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Leaf, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { apiService, LoginRequest } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -18,25 +20,56 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate login API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      const loginData: LoginRequest = { email, password };
+      const response = await apiService.login(loginData);
 
-    // For demo purposes, navigate based on email pattern
-    if (email.includes("admin")) {
-      navigate("/admin/dashboard");
-    } else if (email.includes("ngo")) {
-      navigate("/ngo/dashboard");
-    } else {
-      // Default to user dashboard for regular users
-      navigate("/user/dashboard");
+      if (response.success && response.data) {
+        // Store tokens in localStorage
+        localStorage.setItem('accessToken', response.data.accessToken);
+        localStorage.setItem('refreshToken', response.data.refreshToken);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+
+        // Show success message
+        toast({
+          title: "Login successful!",
+          description: `Welcome back, ${response.data.user.fullName}!`,
+        });
+
+        // Navigate based on user role
+        switch (response.data.user.role) {
+          case 'admin':
+            navigate("/admin/dashboard");
+            break;
+          case 'ngo':
+            navigate("/ngo/dashboard");
+            break;
+          default:
+            navigate("/user/dashboard");
+        }
+      } else {
+        toast({
+          title: "Login failed",
+          description: response.message || "Please check your credentials",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      console.error('Login error:', error);
+      toast({
+        title: "Login failed",
+        description: error.message || "An error occurred during login",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (
@@ -146,13 +179,13 @@ export default function Login() {
               </Link>
             </div>
 
-            {/* Demo Credentials */}
+            {/* API Status */}
             <div className="mt-6 p-4 bg-muted/50 rounded-lg text-xs text-muted-foreground">
-              <p className="font-medium mb-1">Demo Credentials:</p>
-              <p>Admin: admin@ecoconnect.com</p>
-              <p>NGO: ngo@example.com</p>
-              <p>User: user@example.com</p>
-              <p>Password: demo123</p>
+              <p className="font-medium mb-1">Connected to Backend API:</p>
+              <p>✅ Real authentication system</p>
+              <p>✅ MongoDB Atlas database</p>
+              <p>✅ JWT token security</p>
+              <p className="mt-2 text-primary">Register a new account to get started!</p>
             </div>
           </CardContent>
         </Card>

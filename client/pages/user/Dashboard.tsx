@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import UserLayout from "@/components/UserLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +16,8 @@ import {
   Target,
   Star,
 } from "lucide-react";
+import { apiService } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 interface UpcomingEvent {
   id: string;
@@ -28,40 +30,75 @@ interface UpcomingEvent {
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
-  // User data - would come from API/context in real app
-  const userName = "Alex Johnson";
-  const currentStreak = 45; // Changed to be multiple of 30 for demo
-  const totalPoints = 2850;
-  const globalRank = 42;
-  const totalUsers = 5000;
+  // State for real data
+  const [userData, setUserData] = useState<any>(null);
+  const [upcomingEvents, setUpcomingEvents] = useState<UpcomingEvent[]>([]);
+  const [userRank, setUserRank] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [upcomingEvents] = useState<UpcomingEvent[]>([
-    {
-      id: "1",
-      name: "Community Tree Planting Day",
-      date: "2024-02-15",
-      time: "09:00",
-      location: "Central Park",
-      organizer: "Green Earth Foundation",
-    },
-    {
-      id: "2",
-      name: "Ocean Cleanup Drive",
-      date: "2024-02-18",
-      time: "07:30",
-      location: "Marina Beach",
-      organizer: "Ocean Cleanup Initiative",
-    },
-    {
-      id: "3",
-      name: "Sustainable Living Workshop",
-      date: "2024-02-22",
-      time: "14:00",
-      location: "Community Center",
-      organizer: "Green Earth Foundation",
-    },
-  ]);
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Get user data from localStorage
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          setUserData(JSON.parse(storedUser));
+        }
+
+        // Fetch upcoming events
+        const eventsResponse = await apiService.getEvents({ status: 'upcoming', limit: 3 });
+        if (eventsResponse.success) {
+          setUpcomingEvents(eventsResponse.data.events.map((event: any) => ({
+            id: event._id,
+            name: event.title,
+            date: event.startDate,
+            time: new Date(event.startDate).toLocaleTimeString('en-US', { 
+              hour: '2-digit', 
+              minute: '2-digit' 
+            }),
+            location: `${event.location?.city || ''}, ${event.location?.state || ''}`,
+            organizer: event.organizer?.organizationName || event.organizer?.fullName || 'Unknown',
+          })));
+        }
+
+        // Fetch user rank (only if user is logged in)
+        try {
+          const rankResponse = await apiService.getUserRank();
+          if (rankResponse.success) {
+            setUserRank(rankResponse.data);
+          }
+        } catch (error) {
+          // User rank fetch failed (likely not logged in), continue without it
+          console.log('User rank not available (user may not be logged in)');
+        }
+
+      } catch (error: any) {
+        console.error('Error fetching dashboard data:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load dashboard data",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [toast]);
+
+  // Get user info with fallbacks
+  const userName = userData?.fullName || "User";
+  const currentStreak = userData?.currentStreak || 0;
+  const longestStreak = userData?.longestStreak || 0;
+  const totalPoints = userData?.totalPoints || 0;
+  const pointsGiven = userData?.pointsGiven || 0;
+  const globalRank = userRank?.rank?.global || 0;
+  const totalUsers = userRank?.rank?.total || 0;
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -71,6 +108,21 @@ export default function Dashboard() {
   };
 
   const hasMultiplierActive = currentStreak % 30 === 0 && currentStreak > 0;
+
+  if (isLoading) {
+    return (
+      <UserLayout>
+        <div className="p-6 space-y-6">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading dashboard...</p>
+            </div>
+          </div>
+        </div>
+      </UserLayout>
+    );
+  }
 
   return (
     <UserLayout>
@@ -100,7 +152,9 @@ export default function Dashboard() {
                 <p className="text-xl font-semibold text-orange-700 mb-2">
                   Day Streak! 🔥
                 </p>
-                <p className="text-sm text-orange-600">Amazing consistency!</p>
+                <p className="text-sm text-orange-600">
+                  Longest: {longestStreak} days
+                </p>
               </div>
 
               {hasMultiplierActive && (
@@ -108,6 +162,13 @@ export default function Dashboard() {
                   🎉 2x Points Multiplier Active!
                 </Badge>
               )}
+
+              {/* Streak Info */}
+              <div className="mt-4 p-3 bg-orange-100 rounded-lg">
+                <p className="text-xs text-orange-700">
+                  💡 Complete at least one habit daily to maintain your streak!
+                </p>
+              </div>
             </CardContent>
           </Card>
 
@@ -124,6 +185,9 @@ export default function Dashboard() {
                   </p>
                   <p className="text-sm text-green-600 mt-1">
                     Ready to redeem!
+                  </p>
+                  <p className="text-xs text-green-500 mt-1">
+                    Given: {pointsGiven.toLocaleString()} pts
                   </p>
                 </div>
                 <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">

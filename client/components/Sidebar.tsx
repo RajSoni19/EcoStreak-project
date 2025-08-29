@@ -8,6 +8,8 @@ import {
   Trophy,
   Users,
   Store,
+  Calendar,
+  MessageSquare,
   LogOut,
   X,
 } from "lucide-react";
@@ -28,9 +30,10 @@ export default function Sidebar({ onClose }: SidebarProps) {
   const navigation: NavigationItem[] = [
     { name: "Dashboard", href: "/user/dashboard", icon: LayoutDashboard },
     { name: "Log Habits", href: "/user/habits", icon: CheckSquare },
-    { name: "Leaderboard", href: "/user/leaderboard", icon: Trophy },
+    { name: "Events", href: "/user/events", icon: Calendar },
     { name: "Communities", href: "/user/communities", icon: Users },
     { name: "Store", href: "/user/store", icon: Store },
+    { name: "Leaderboard", href: "/user/leaderboard", icon: Trophy },
   ];
 
   const handleLogout = () => {

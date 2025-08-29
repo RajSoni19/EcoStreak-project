@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Leaf, Mail, Lock, User, Building, Eye, EyeOff } from "lucide-react";
+import { apiService, RegisterRequest } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 type UserRole = "user" | "ngo";
 
@@ -29,6 +31,7 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -69,17 +72,52 @@ export default function Register() {
 
     setIsLoading(true);
 
-    // Simulate registration API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const registerData: RegisterRequest = {
+        fullName: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role,
+        organizationName: formData.role === 'ngo' ? formData.organizationName : undefined,
+      };
 
-    // Navigate to appropriate dashboard
-    if (formData.role === "ngo") {
-      navigate("/ngo/dashboard");
-    } else {
-      navigate("/user/dashboard");
+      const response = await apiService.register(registerData);
+
+      if (response.success && response.data) {
+        // Store tokens in localStorage
+        localStorage.setItem('accessToken', response.data.accessToken);
+        localStorage.setItem('refreshToken', response.data.refreshToken);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+
+        // Show success message
+        toast({
+          title: "Registration successful!",
+          description: `Welcome to EcoConnect, ${response.data.user.fullName}!`,
+        });
+
+        // Navigate to appropriate dashboard
+        if (formData.role === "ngo") {
+          navigate("/ngo/dashboard");
+        } else {
+          navigate("/user/dashboard");
+        }
+      } else {
+        toast({
+          title: "Registration failed",
+          description: response.message || "Please check your information",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      toast({
+        title: "Registration failed",
+        description: error.message || "An error occurred during registration",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   const handleInputChange = (field: string, value: string) => {

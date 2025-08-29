@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,8 @@ import {
   TrendingUp,
   Award,
 } from "lucide-react";
+import { apiService } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 interface Event {
   id: string;
@@ -28,72 +31,79 @@ interface Event {
 }
 
 export default function NGODashboard() {
-  const organizationName = "Green Earth Foundation";
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
+  // State for real data
+  const [ngoData, setNgoData] = useState<any>(null);
+  const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
+  const [stats, setStats] = useState({
+    scheduledEvents: 0,
+    completedEvents: 0,
+    totalMembers: 0,
+    totalPointsAwarded: 0,
+  });
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [upcomingEvents] = useState<Event[]>([
-    {
-      id: "1",
-      name: "Community Tree Planting Day",
-      date: "2024-02-15",
-      time: "09:00",
-      location: "Central Park",
-      registeredParticipants: 32,
-      maxParticipants: 50,
-      pointsAwarded: 25,
-      status: "upcoming",
-    },
-    {
-      id: "2",
-      name: "Ocean Cleanup Drive",
-      date: "2024-02-18",
-      time: "07:30",
-      location: "Marina Beach",
-      registeredParticipants: 18,
-      maxParticipants: 30,
-      pointsAwarded: 30,
-      status: "upcoming",
-    },
-    {
-      id: "3",
-      name: "Sustainable Living Workshop",
-      date: "2024-02-22",
-      time: "14:00",
-      location: "Community Center",
-      registeredParticipants: 45,
-      maxParticipants: 60,
-      pointsAwarded: 20,
-      status: "upcoming",
-    },
-    {
-      id: "4",
-      name: "Green Energy Seminar",
-      date: "2024-02-25",
-      time: "10:00",
-      location: "University Auditorium",
-      registeredParticipants: 15,
-      maxParticipants: 40,
-      pointsAwarded: 35,
-      status: "upcoming",
-    },
-    {
-      id: "5",
-      name: "Recycling Awareness Campaign",
-      date: "2024-03-01",
-      time: "11:00",
-      location: "Downtown Plaza",
-      registeredParticipants: 28,
-      maxParticipants: 50,
-      pointsAwarded: 15,
-      status: "upcoming",
-    },
-  ]);
+  useEffect(() => {
+    const fetchNGODashboard = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Get NGO data from localStorage
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          setNgoData(JSON.parse(storedUser));
+        }
 
-  const stats = {
-    scheduledEvents: upcomingEvents.length,
-    completedEvents: 18,
-    totalMembers: 150,
-    totalPointsAwarded: 2450,
-  };
+        // Fetch NGO dashboard data
+        const dashboardResponse = await apiService.getNGODashboard();
+        if (dashboardResponse.success) {
+          const { ngo, stats: dashboardStats, events } = dashboardResponse.data;
+          
+          // Update stats
+          setStats({
+            scheduledEvents: dashboardStats.totalEvents,
+            completedEvents: dashboardStats.totalEvents, // You can filter by status if needed
+            totalMembers: dashboardStats.totalMembers,
+            totalPointsAwarded: 0, // Calculate from events if needed
+          });
+
+          // Update events
+          if (events && events.length > 0) {
+            setUpcomingEvents(events.map((event: any) => ({
+              id: event._id,
+              name: event.title,
+              date: event.startDate,
+              time: new Date(event.startDate).toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+              }),
+              location: `${event.location?.city || ''}, ${event.location?.state || ''}`,
+              registeredParticipants: event.participants?.length || 0,
+              maxParticipants: event.maxParticipants || 0,
+              pointsAwarded: 25, // Default points, can be configured
+              status: event.status,
+            })));
+          }
+        }
+
+      } catch (error: any) {
+        console.error('Error fetching NGO dashboard data:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load NGO dashboard data",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchNGODashboard();
+  }, [toast]);
+
+  const organizationName = ngoData?.organizationName || "NGO Organization";
 
   const getParticipationPercentage = (registered: number, max: number) => {
     return Math.round((registered / max) * 100);
@@ -105,6 +115,25 @@ export default function NGODashboard() {
     if (percentage >= 50) return "text-eco-sky";
     return "text-eco-earth";
   };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout
+        userRole="ngo"
+        userName="NGO Admin"
+        organizationName={organizationName}
+      >
+        <div className="space-y-6">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading NGO dashboard...</p>
+            </div>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout
@@ -206,7 +235,10 @@ export default function NGODashboard() {
                 <Calendar className="w-5 h-5" />
                 Upcoming Events
               </CardTitle>
-              <Button className="bg-primary hover:bg-primary/90">
+              <Button 
+                className="bg-primary hover:bg-primary/90"
+                onClick={() => navigate("/ngo/events/create")}
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 Create Event
               </Button>
@@ -312,7 +344,10 @@ export default function NGODashboard() {
 
         {/* Quick Actions Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+          <Card 
+            className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => navigate("/ngo/events")}
+          >
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-lg bg-eco-sky/10 flex items-center justify-center">
@@ -331,7 +366,10 @@ export default function NGODashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+          <Card 
+            className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => navigate("/ngo/communities")}
+          >
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-lg bg-eco-earth/10 flex items-center justify-center">
@@ -350,7 +388,10 @@ export default function NGODashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+          <Card 
+            className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => navigate("/ngo/store")}
+          >
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-lg bg-eco-sage/10 flex items-center justify-center">

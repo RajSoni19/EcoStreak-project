@@ -1,0 +1,58 @@
+{
+  "name": "ecoconnect-backend",
+  "version": "1.0.0",
+  "description": "EcoConnect Backend API with MongoDB Atlas",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest",
+    "lint": "eslint src/**/*.ts",
+    "format": "prettier --write src/**/*.ts"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongoose": "^8.0.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0",
+    "express-validator": "^7.0.1",
+    "multer": "^1.4.5-lts.1",
+    "cloudinary": "^1.41.0",
+    "nodemailer": "^6.9.7",
+    "joi": "^17.11.0",
+    "compression": "^1.7.4",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.2.1",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/cors": "^2.8.19",
+    "@types/multer": "^1.4.11",
+    "@types/compression": "^1.7.5",
+    "@types/morgan": "^1.9.9",
+    "@types/nodemailer": "^6.4.14",
+    "typescript": "^5.9.2",
+    "tsx": "^4.20.3",
+    "vitest": "^3.2.4",
+    "eslint": "^8.56.0",
+    "prettier": "^3.6.2"
+  },
+  "keywords": [
+    "ecoconnect",
+    "backend",
+    "mongodb",
+    "express",
+    "typescript",
+    "api"
+  ],
+  "author": "EcoConnect Team",
+  "license": "MIT"
+}

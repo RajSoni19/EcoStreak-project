@@ -28,6 +28,8 @@ import UserLeaderboard from "./pages/user/Leaderboard";
 import UserStore from "./pages/user/Store";
 import UserCommunities from "./pages/user/Communities";
 import UserCommunity from "./pages/user/Community";
+import CommunityPosts from "./pages/user/CommunityPosts";
+import EventRegistration from "./pages/user/EventRegistration";
 
 // Shared Pages
 import NotFound from "./pages/NotFound";
@@ -82,10 +84,8 @@ const App = () => (
           <Route path="/user/store" element={<UserStore />} />
           <Route path="/user/communities" element={<UserCommunities />} />
           <Route path="/user/community/:id" element={<UserCommunity />} />
-          <Route
-            path="/user/events"
-            element={<PlaceholderPage title="Browse Events" />}
-          />
+          <Route path="/user/community/:id/posts" element={<CommunityPosts />} />
+          <Route path="/user/events" element={<EventRegistration />} />
           <Route
             path="/user/settings"
             element={<PlaceholderPage title="User Settings" />}
