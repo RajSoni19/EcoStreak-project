@@ -103,8 +103,8 @@ export default function Leaderboard() {
   };
 
   return (
-    <DashboardLayout userRole="user" userName="Alex Johnson">
-      <div className="space-y-6">
+    <UserLayout>
+      <div className="p-6 space-y-6">
         {/* Header */}
         <div className="text-center">
           <h1 className="text-3xl font-bold text-foreground mb-2">🏆 Leaderboard</h1>
@@ -300,6 +300,6 @@ export default function Leaderboard() {
           </CardContent>
         </Card>
       </div>
-    </DashboardLayout>
+    </UserLayout>
   );
 }
