@@ -19,6 +19,14 @@ import ManageNGOs from "./pages/admin/ManageNGOs";
 import NGODashboard from "./pages/ngo/Dashboard";
 import NGOEvents from "./pages/ngo/Events";
 
+// User Pages
+import UserDashboard from "./pages/user/Dashboard";
+import UserHabits from "./pages/user/Habits";
+import UserLeaderboard from "./pages/user/Leaderboard";
+import UserStore from "./pages/user/Store";
+import UserCommunities from "./pages/user/Communities";
+import UserCommunity from "./pages/user/Community";
+
 // Shared Pages
 import NotFound from "./pages/NotFound";
 import PlaceholderPage from "./pages/PlaceholderPage";
