@@ -62,9 +62,13 @@ const App = () => (
           <Route path="/ngo/settings" element={<PlaceholderPage title="NGO Settings" />} />
 
           {/* User Routes */}
-          <Route path="/user/dashboard" element={<PlaceholderPage title="User Dashboard" />} />
+          <Route path="/user/dashboard" element={<UserDashboard />} />
+          <Route path="/user/habits" element={<UserHabits />} />
+          <Route path="/user/leaderboard" element={<UserLeaderboard />} />
+          <Route path="/user/store" element={<UserStore />} />
+          <Route path="/user/communities" element={<UserCommunities />} />
+          <Route path="/user/community/:id" element={<UserCommunity />} />
           <Route path="/user/events" element={<PlaceholderPage title="Browse Events" />} />
-          <Route path="/user/rewards" element={<PlaceholderPage title="My Rewards" />} />
           <Route path="/user/settings" element={<PlaceholderPage title="User Settings" />} />
 
           {/* Utility Routes */}
