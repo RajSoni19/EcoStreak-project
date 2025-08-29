@@ -57,6 +57,17 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Eco-friendly color extensions
+        eco: {
+          forest: "hsl(140 60% 25%)",
+          leaf: "hsl(120 50% 40%)",
+          sage: "hsl(100 20% 55%)",
+          earth: "hsl(30 35% 45%)",
+          sky: "hsl(200 70% 60%)",
+          ocean: "hsl(210 80% 35%)",
+          sand: "hsl(45 40% 75%)",
+          moss: "hsl(80 30% 35%)",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
