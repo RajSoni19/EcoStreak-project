@@ -18,6 +18,8 @@ import ManageNGOs from "./pages/admin/ManageNGOs";
 // NGO Pages
 import NGODashboard from "./pages/ngo/Dashboard";
 import NGOEvents from "./pages/ngo/Events";
+import NGOStore from "./pages/ngo/Store";
+import NGOCommunity from "./pages/ngo/Community";
 
 // User Pages
 import UserDashboard from "./pages/user/Dashboard";
@@ -66,14 +68,8 @@ const App = () => (
             path="/ngo/events/create"
             element={<PlaceholderPage title="Create Event" />}
           />
-          <Route
-            path="/ngo/rewards"
-            element={<PlaceholderPage title="Rewards Store Management" />}
-          />
-          <Route
-            path="/ngo/community"
-            element={<PlaceholderPage title="Community Management" />}
-          />
+          <Route path="/ngo/rewards" element={<NGOStore />} />
+          <Route path="/ngo/community" element={<NGOCommunity />} />
           <Route
             path="/ngo/settings"
             element={<PlaceholderPage title="NGO Settings" />}
