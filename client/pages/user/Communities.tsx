@@ -6,16 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
-  Users, 
-  Search, 
+import {
+  Users,
+  Search,
   Star,
   MapPin,
   Calendar,
   TrendingUp,
   CheckCircle,
   UserPlus,
-  Leaf
+  Leaf,
 } from "lucide-react";
 
 interface Community {
@@ -37,13 +37,17 @@ interface Community {
 export default function Communities() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const [joinedCommunities, setJoinedCommunities] = useState<string[]>(["2", "5"]); // User is already in these communities
+  const [joinedCommunities, setJoinedCommunities] = useState<string[]>([
+    "2",
+    "5",
+  ]); // User is already in these communities
 
   const communities: Community[] = [
     {
       id: "1",
       name: "Green Warriors",
-      description: "Join us in the fight against climate change! We organize tree planting, beach cleanups, and eco-awareness events.",
+      description:
+        "Join us in the fight against climate change! We organize tree planting, beach cleanups, and eco-awareness events.",
       ngoName: "Green Earth Foundation",
       memberCount: 156,
       totalPoints: 45680,
@@ -52,12 +56,13 @@ export default function Communities() {
       isJoined: false,
       recentActivity: "Organized beach cleanup last weekend",
       createdDate: "2023-03-15",
-      featuredActivity: "Tree Planting Day - Feb 15"
+      featuredActivity: "Tree Planting Day - Feb 15",
     },
     {
       id: "2",
-      name: "Ocean Guardians", 
-      description: "Protecting our marine ecosystems through cleanup drives, education, and sustainable living practices.",
+      name: "Ocean Guardians",
+      description:
+        "Protecting our marine ecosystems through cleanup drives, education, and sustainable living practices.",
       ngoName: "Ocean Cleanup Initiative",
       memberCount: 142,
       totalPoints: 42340,
@@ -66,12 +71,13 @@ export default function Communities() {
       isJoined: true,
       recentActivity: "Weekly plastic collection drive",
       createdDate: "2023-04-20",
-      featuredActivity: "Ocean Cleanup Drive - Feb 18"
+      featuredActivity: "Ocean Cleanup Drive - Feb 18",
     },
     {
       id: "3",
       name: "Solar Pioneers",
-      description: "Advancing renewable energy adoption in communities. Learn about solar power and sustainable energy solutions.",
+      description:
+        "Advancing renewable energy adoption in communities. Learn about solar power and sustainable energy solutions.",
       ngoName: "Solar Communities Network",
       memberCount: 189,
       totalPoints: 38920,
@@ -79,12 +85,13 @@ export default function Communities() {
       category: "Renewable Energy",
       isJoined: false,
       recentActivity: "Solar workshop for beginners",
-      createdDate: "2023-02-10"
+      createdDate: "2023-02-10",
     },
     {
       id: "4",
       name: "Plastic-Free Heroes",
-      description: "Working towards a plastic-free world through education, alternatives, and community action.",
+      description:
+        "Working towards a plastic-free world through education, alternatives, and community action.",
       ngoName: "Zero Waste Alliance",
       memberCount: 124,
       totalPoints: 35670,
@@ -92,12 +99,13 @@ export default function Communities() {
       category: "Zero Waste",
       isJoined: false,
       recentActivity: "Plastic-free challenge completed",
-      createdDate: "2023-05-08"
+      createdDate: "2023-05-08",
     },
     {
       id: "5",
       name: "Urban Forest",
-      description: "Creating green spaces in urban areas. Join us for tree planting, garden maintenance, and green infrastructure projects.",
+      description:
+        "Creating green spaces in urban areas. Join us for tree planting, garden maintenance, and green infrastructure projects.",
       ngoName: "Urban Forest Project",
       memberCount: 98,
       totalPoints: 31250,
@@ -105,12 +113,13 @@ export default function Communities() {
       category: "Urban Ecology",
       isJoined: true,
       recentActivity: "Community garden expansion",
-      createdDate: "2023-06-12"
+      createdDate: "2023-06-12",
     },
     {
       id: "6",
       name: "Climate Champions",
-      description: "Youth-led movement for climate action. Engage in advocacy, education, and community climate initiatives.",
+      description:
+        "Youth-led movement for climate action. Engage in advocacy, education, and community climate initiatives.",
       ngoName: "Climate Action Coalition",
       memberCount: 167,
       totalPoints: 33480,
@@ -118,12 +127,13 @@ export default function Communities() {
       category: "Climate Action",
       isJoined: false,
       recentActivity: "Climate march organization",
-      createdDate: "2023-01-25"
+      createdDate: "2023-01-25",
     },
     {
       id: "7",
       name: "Eco Innovators",
-      description: "Exploring cutting-edge environmental technologies and sustainable innovation for a greener future.",
+      description:
+        "Exploring cutting-edge environmental technologies and sustainable innovation for a greener future.",
       ngoName: "Sustainability Lab",
       memberCount: 115,
       totalPoints: 26780,
@@ -131,12 +141,13 @@ export default function Communities() {
       category: "Innovation",
       isJoined: false,
       recentActivity: "Green tech showcase event",
-      createdDate: "2023-07-03"
+      createdDate: "2023-07-03",
     },
     {
       id: "8",
       name: "Water Savers",
-      description: "Conservation-focused community working on water preservation, rainwater harvesting, and sustainable water use.",
+      description:
+        "Conservation-focused community working on water preservation, rainwater harvesting, and sustainable water use.",
       ngoName: "H2O Conservation",
       memberCount: 87,
       totalPoints: 24560,
@@ -144,36 +155,43 @@ export default function Communities() {
       category: "Water Conservation",
       isJoined: false,
       recentActivity: "Rainwater harvesting workshop",
-      createdDate: "2023-08-14"
-    }
+      createdDate: "2023-08-14",
+    },
   ];
 
-  const filteredCommunities = communities.filter(community =>
-    community.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    community.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    community.ngoName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    community.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    community.location.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCommunities = communities.filter(
+    (community) =>
+      community.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      community.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      community.ngoName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      community.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      community.location.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const handleJoinCommunity = (communityId: string) => {
-    setJoinedCommunities(prev => [...prev, communityId]);
+    setJoinedCommunities((prev) => [...prev, communityId]);
   };
 
   const getInitials = (name: string) => {
-    return name.split(" ").map(n => n[0]).join("").toUpperCase();
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
   };
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      "Environmental Action": "bg-eco-forest/10 text-eco-forest border-eco-forest/20",
+      "Environmental Action":
+        "bg-eco-forest/10 text-eco-forest border-eco-forest/20",
       "Marine Conservation": "bg-blue-500/10 text-blue-600 border-blue-500/20",
-      "Renewable Energy": "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
+      "Renewable Energy":
+        "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
       "Zero Waste": "bg-eco-sage/10 text-eco-sage border-eco-sage/20",
       "Urban Ecology": "bg-eco-leaf/10 text-eco-leaf border-eco-leaf/20",
       "Climate Action": "bg-eco-sky/10 text-eco-sky border-eco-sky/20",
-      "Innovation": "bg-purple-500/10 text-purple-600 border-purple-500/20",
-      "Water Conservation": "bg-cyan-500/10 text-cyan-600 border-cyan-500/20"
+      Innovation: "bg-purple-500/10 text-purple-600 border-purple-500/20",
+      "Water Conservation": "bg-cyan-500/10 text-cyan-600 border-cyan-500/20",
     };
     return colors[category] || "bg-muted text-muted-foreground border-muted";
   };
@@ -190,7 +208,8 @@ export default function Communities() {
             Eco-Communities
           </h1>
           <p className="text-muted-foreground">
-            Connect with like-minded environmental advocates and make a collective impact
+            Connect with like-minded environmental advocates and make a
+            collective impact
           </p>
         </div>
 
@@ -203,8 +222,12 @@ export default function Communities() {
                   <Users className="w-6 h-6 text-eco-sky" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Communities Joined</p>
-                  <p className="text-2xl font-bold text-eco-sky">{joinedCount}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Communities Joined
+                  </p>
+                  <p className="text-2xl font-bold text-eco-sky">
+                    {joinedCount}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -217,8 +240,12 @@ export default function Communities() {
                   <TrendingUp className="w-6 h-6 text-eco-forest" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Available Communities</p>
-                  <p className="text-2xl font-bold text-eco-forest">{communities.length}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Available Communities
+                  </p>
+                  <p className="text-2xl font-bold text-eco-forest">
+                    {communities.length}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -231,10 +258,12 @@ export default function Communities() {
                   <Star className="w-6 h-6 text-eco-sage" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Community Points</p>
+                  <p className="text-sm text-muted-foreground">
+                    Total Community Points
+                  </p>
                   <p className="text-2xl font-bold text-eco-sage">
                     {communities
-                      .filter(c => joinedCommunities.includes(c.id))
+                      .filter((c) => joinedCommunities.includes(c.id))
                       .reduce((sum, c) => sum + c.totalPoints, 0)
                       .toLocaleString()}
                   </p>
@@ -263,9 +292,9 @@ export default function Communities() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {filteredCommunities.map((community) => {
             const isJoined = joinedCommunities.includes(community.id);
-            
+
             return (
-              <Card 
+              <Card
                 key={community.id}
                 className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.01] cursor-pointer"
                 onClick={() => navigate(`/user/community/${community.id}`)}
@@ -281,7 +310,9 @@ export default function Communities() {
                       </Avatar>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <CardTitle className="text-lg">{community.name}</CardTitle>
+                          <CardTitle className="text-lg">
+                            {community.name}
+                          </CardTitle>
                           {isJoined && (
                             <Badge className="bg-eco-forest/10 text-eco-forest border-eco-forest/20">
                               <CheckCircle className="w-3 h-3 mr-1" />
@@ -289,7 +320,10 @@ export default function Communities() {
                             </Badge>
                           )}
                         </div>
-                        <Badge variant="outline" className={getCategoryColor(community.category)}>
+                        <Badge
+                          variant="outline"
+                          className={getCategoryColor(community.category)}
+                        >
                           {community.category}
                         </Badge>
                       </div>
@@ -305,12 +339,16 @@ export default function Communities() {
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div className="flex items-center gap-2">
                       <Users className="w-4 h-4 text-eco-sky" />
-                      <span className="font-medium">{community.memberCount}</span>
+                      <span className="font-medium">
+                        {community.memberCount}
+                      </span>
                       <span className="text-muted-foreground">members</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Star className="w-4 h-4 text-eco-sage" />
-                      <span className="font-medium">{community.totalPoints.toLocaleString()}</span>
+                      <span className="font-medium">
+                        {community.totalPoints.toLocaleString()}
+                      </span>
                       <span className="text-muted-foreground">points</span>
                     </div>
                   </div>
@@ -318,36 +356,54 @@ export default function Communities() {
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-muted-foreground">{community.location}</span>
+                      <span className="text-muted-foreground">
+                        {community.location}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Leaf className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-muted-foreground">by {community.ngoName}</span>
+                      <span className="text-muted-foreground">
+                        by {community.ngoName}
+                      </span>
                     </div>
                   </div>
 
                   {community.recentActivity && (
                     <div className="bg-muted/50 rounded-lg p-3">
-                      <p className="text-xs text-muted-foreground mb-1">Recent Activity</p>
-                      <p className="text-sm font-medium">{community.recentActivity}</p>
+                      <p className="text-xs text-muted-foreground mb-1">
+                        Recent Activity
+                      </p>
+                      <p className="text-sm font-medium">
+                        {community.recentActivity}
+                      </p>
                     </div>
                   )}
 
                   {community.featuredActivity && (
                     <div className="bg-eco-forest/5 border border-eco-forest/20 rounded-lg p-3">
-                      <p className="text-xs text-eco-forest mb-1">Upcoming Event</p>
-                      <p className="text-sm font-medium text-eco-forest">{community.featuredActivity}</p>
+                      <p className="text-xs text-eco-forest mb-1">
+                        Upcoming Event
+                      </p>
+                      <p className="text-sm font-medium text-eco-forest">
+                        {community.featuredActivity}
+                      </p>
                     </div>
                   )}
 
                   <div className="flex items-center justify-between pt-2">
                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Calendar className="w-3 h-3" />
-                      <span>Founded {new Date(community.createdDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+                      <span>
+                        Founded{" "}
+                        {new Date(community.createdDate).toLocaleDateString(
+                          "en-US",
+                          { month: "short", year: "numeric" },
+                        )}
+                      </span>
                     </div>
-                    
+
                     {!isJoined ? (
-                      <Button 
+                      <Button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleJoinCommunity(community.id);
@@ -358,7 +414,7 @@ export default function Communities() {
                         Join
                       </Button>
                     ) : (
-                      <Button 
+                      <Button
                         variant="outline"
                         className="border-eco-forest/30 text-eco-forest hover:bg-eco-forest/10"
                       >
@@ -377,12 +433,13 @@ export default function Communities() {
           <Card className="border-0 shadow-sm">
             <CardContent className="p-12 text-center">
               <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-foreground mb-2">No communities found</h3>
+              <h3 className="text-lg font-medium text-foreground mb-2">
+                No communities found
+              </h3>
               <p className="text-muted-foreground">
-                {searchTerm 
-                  ? "Try adjusting your search terms to find communities" 
-                  : "No communities are available at the moment"
-                }
+                {searchTerm
+                  ? "Try adjusting your search terms to find communities"
+                  : "No communities are available at the moment"}
               </p>
             </CardContent>
           </Card>

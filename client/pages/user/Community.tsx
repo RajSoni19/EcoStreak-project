@@ -15,8 +15,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { 
-  Users, 
+import {
+  Users,
   Star,
   Heart,
   Send,
@@ -27,7 +27,7 @@ import {
   CheckCircle,
   Sparkles,
   MapPin,
-  TrendingUp
+  TrendingUp,
 } from "lucide-react";
 
 interface CommunityMember {
@@ -56,34 +56,43 @@ export default function Community() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [showPointTransferModal, setShowPointTransferModal] = useState(false);
-  const [selectedMember, setSelectedMember] = useState<CommunityMember | null>(null);
+  const [selectedMember, setSelectedMember] = useState<CommunityMember | null>(
+    null,
+  );
   const [transferAmount, setTransferAmount] = useState("");
   const [posts, setPosts] = useState<FeedPost[]>([]);
-  
+
   const userPoints = 1250;
 
   // Mock community data - would come from API
   const community = {
     id: id || "2",
     name: "Ocean Guardians",
-    description: "Protecting our marine ecosystems through cleanup drives, education, and sustainable living practices.",
+    description:
+      "Protecting our marine ecosystems through cleanup drives, education, and sustainable living practices.",
     ngoName: "Ocean Cleanup Initiative",
     memberCount: 142,
     totalPoints: 42340,
     location: "Los Angeles, CA",
     category: "Marine Conservation",
-    isJoined: true
+    isJoined: true,
   };
 
   const members: CommunityMember[] = [
     { id: "1", name: "Emma Rodriguez", points: 2850, joinedDate: "2023-06-15" },
-    { id: "2", name: "Alex Johnson", points: 1250, joinedDate: "2023-08-22", isCurrentUser: true },
+    {
+      id: "2",
+      name: "Alex Johnson",
+      points: 1250,
+      joinedDate: "2023-08-22",
+      isCurrentUser: true,
+    },
     { id: "3", name: "Michael Chen", points: 1820, joinedDate: "2023-07-10" },
     { id: "4", name: "Sarah Wilson", points: 1650, joinedDate: "2023-09-05" },
     { id: "5", name: "David Kim", points: 1420, joinedDate: "2023-08-30" },
     { id: "6", name: "Lisa Thompson", points: 1180, joinedDate: "2023-09-12" },
     { id: "7", name: "Carlos Mendez", points: 980, joinedDate: "2023-09-18" },
-    { id: "8", name: "Anna Petrov", points: 845, joinedDate: "2023-10-02" }
+    { id: "8", name: "Anna Petrov", points: 845, joinedDate: "2023-10-02" },
   ];
 
   const [feedPosts, setFeedPosts] = useState<FeedPost[]>([
@@ -95,27 +104,27 @@ export default function Community() {
       timestamp: "2024-01-21T10:30:00Z",
       likes: 8,
       isLiked: false,
-      eventName: "Ocean Cleanup Drive"
+      eventName: "Ocean Cleanup Drive",
     },
     {
-      id: "2", 
+      id: "2",
       type: "achievement",
       userName: "Michael Chen",
       content: "completed their 30-day plastic-free challenge! 🌊",
       timestamp: "2024-01-21T09:15:00Z",
       likes: 12,
       isLiked: true,
-      pointsEarned: 150
+      pointsEarned: 150,
     },
     {
       id: "3",
       type: "habit_log",
-      userName: "Sarah Wilson", 
+      userName: "Sarah Wilson",
       content: "logged 5 eco-habits today and earned 45 points!",
       timestamp: "2024-01-21T08:45:00Z",
       likes: 5,
       isLiked: false,
-      pointsEarned: 45
+      pointsEarned: 45,
     },
     {
       id: "4",
@@ -124,28 +133,34 @@ export default function Community() {
       content: "reached a 20-day streak! Keep the momentum going! 🔥",
       timestamp: "2024-01-20T16:20:00Z",
       likes: 15,
-      isLiked: true
+      isLiked: true,
     },
     {
       id: "5",
       type: "event_registration",
       userName: "Lisa Thompson",
       content: "just registered for the 'Sustainable Living Workshop' event!",
-      timestamp: "2024-01-20T14:10:00Z", 
+      timestamp: "2024-01-20T14:10:00Z",
       likes: 3,
       isLiked: false,
-      eventName: "Sustainable Living Workshop"
-    }
+      eventName: "Sustainable Living Workshop",
+    },
   ]);
 
   const sortedMembers = [...members].sort((a, b) => b.points - a.points);
 
   const handleLike = (postId: string) => {
-    setFeedPosts(prev => prev.map(post => 
-      post.id === postId 
-        ? { ...post, likes: post.isLiked ? post.likes - 1 : post.likes + 1, isLiked: !post.isLiked }
-        : post
-    ));
+    setFeedPosts((prev) =>
+      prev.map((post) =>
+        post.id === postId
+          ? {
+              ...post,
+              likes: post.isLiked ? post.likes - 1 : post.likes + 1,
+              isLiked: !post.isLiked,
+            }
+          : post,
+      ),
+    );
   };
 
   const handleSendPoints = (member: CommunityMember) => {
@@ -160,27 +175,33 @@ export default function Community() {
       setShowPointTransferModal(false);
       setTransferAmount("");
       setSelectedMember(null);
-      
+
       // Add success feedback (could be a toast notification)
       alert(`Successfully sent ${amount} points to ${selectedMember.name}!`);
     }
   };
 
   const getInitials = (name: string) => {
-    return name.split(" ").map(n => n[0]).join("").toUpperCase();
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
   };
 
   const getTimeAgo = (timestamp: string) => {
     const now = new Date();
     const postTime = new Date(timestamp);
-    const diffInHours = Math.floor((now.getTime() - postTime.getTime()) / (1000 * 60 * 60));
-    
+    const diffInHours = Math.floor(
+      (now.getTime() - postTime.getTime()) / (1000 * 60 * 60),
+    );
+
     if (diffInHours < 1) return "Just now";
     if (diffInHours < 24) return `${diffInHours}h ago`;
     return `${Math.floor(diffInHours / 24)}d ago`;
   };
 
-  const getPostIcon = (type: FeedPost['type']) => {
+  const getPostIcon = (type: FeedPost["type"]) => {
     switch (type) {
       case "event_registration":
         return <Calendar className="w-4 h-4 text-eco-sky" />;
@@ -200,8 +221,8 @@ export default function Community() {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="sm"
             onClick={() => navigate("/user/communities")}
           >
@@ -220,13 +241,17 @@ export default function Community() {
               </Avatar>
               <div>
                 <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-3xl font-bold text-foreground">{community.name}</h1>
+                  <h1 className="text-3xl font-bold text-foreground">
+                    {community.name}
+                  </h1>
                   <Badge className="bg-eco-forest/10 text-eco-forest border-eco-forest/20">
                     <CheckCircle className="w-3 h-3 mr-1" />
                     Member
                   </Badge>
                 </div>
-                <p className="text-muted-foreground mb-2">{community.description}</p>
+                <p className="text-muted-foreground mb-2">
+                  {community.description}
+                </p>
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <MapPin className="w-4 h-4" />
@@ -253,15 +278,23 @@ export default function Community() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-eco-sky mb-1">{community.memberCount}</div>
+                  <div className="text-2xl font-bold text-eco-sky mb-1">
+                    {community.memberCount}
+                  </div>
                   <p className="text-sm text-muted-foreground">Total Members</p>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-eco-sage mb-1">{community.totalPoints.toLocaleString()}</div>
-                  <p className="text-sm text-muted-foreground">Community Points</p>
+                  <div className="text-2xl font-bold text-eco-sage mb-1">
+                    {community.totalPoints.toLocaleString()}
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Community Points
+                  </p>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-eco-earth mb-1">#2</div>
+                  <div className="text-2xl font-bold text-eco-earth mb-1">
+                    #2
+                  </div>
                   <p className="text-sm text-muted-foreground">Global Rank</p>
                 </div>
               </CardContent>
@@ -278,22 +311,26 @@ export default function Community() {
               <CardContent>
                 <div className="space-y-3">
                   {sortedMembers.slice(0, 5).map((member, index) => (
-                    <div 
+                    <div
                       key={member.id}
                       className={`flex items-center justify-between p-3 rounded-lg ${
-                        member.isCurrentUser 
-                          ? 'bg-eco-forest/10 border border-eco-forest/30' 
-                          : 'hover:bg-accent/50'
+                        member.isCurrentUser
+                          ? "bg-eco-forest/10 border border-eco-forest/30"
+                          : "hover:bg-accent/50"
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2">
                           {index < 3 && (
-                            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                              index === 0 ? 'bg-yellow-500 text-white' :
-                              index === 1 ? 'bg-gray-400 text-white' :
-                              'bg-amber-600 text-white'
-                            }`}>
+                            <div
+                              className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                                index === 0
+                                  ? "bg-yellow-500 text-white"
+                                  : index === 1
+                                    ? "bg-gray-400 text-white"
+                                    : "bg-amber-600 text-white"
+                              }`}
+                            >
                               {index + 1}
                             </div>
                           )}
@@ -305,25 +342,37 @@ export default function Community() {
                         </div>
                         <Avatar className="w-8 h-8">
                           <AvatarImage src={member.avatar} />
-                          <AvatarFallback className={member.isCurrentUser ? "bg-eco-forest text-white text-xs" : "text-xs"}>
+                          <AvatarFallback
+                            className={
+                              member.isCurrentUser
+                                ? "bg-eco-forest text-white text-xs"
+                                : "text-xs"
+                            }
+                          >
                             {getInitials(member.name)}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className={`text-sm font-medium ${member.isCurrentUser ? 'text-eco-forest' : 'text-foreground'}`}>
+                          <p
+                            className={`text-sm font-medium ${member.isCurrentUser ? "text-eco-forest" : "text-foreground"}`}
+                          >
                             {member.name}
-                            {member.isCurrentUser && <span className="text-xs ml-1">(You)</span>}
+                            {member.isCurrentUser && (
+                              <span className="text-xs ml-1">(You)</span>
+                            )}
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="flex items-center gap-1">
                           <Star className="w-4 h-4 text-eco-sage" />
-                          <span className="font-medium text-eco-sage">{member.points}</span>
+                          <span className="font-medium text-eco-sage">
+                            {member.points}
+                          </span>
                         </div>
                         {!member.isCurrentUser && (
-                          <Button 
-                            size="sm" 
+                          <Button
+                            size="sm"
                             variant="ghost"
                             onClick={() => handleSendPoints(member)}
                             className="h-8 px-2"
@@ -351,7 +400,10 @@ export default function Community() {
               <CardContent>
                 <div className="space-y-4">
                   {feedPosts.map((post) => (
-                    <div key={post.id} className="border border-border/50 rounded-lg p-4 hover:bg-accent/30 transition-colors">
+                    <div
+                      key={post.id}
+                      className="border border-border/50 rounded-lg p-4 hover:bg-accent/30 transition-colors"
+                    >
                       <div className="flex items-start gap-3">
                         <Avatar className="w-10 h-10">
                           <AvatarImage src={post.userAvatar} />
@@ -359,49 +411,59 @@ export default function Community() {
                             {getInitials(post.userName)}
                           </AvatarFallback>
                         </Avatar>
-                        
+
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             {getPostIcon(post.type)}
-                            <span className="font-semibold text-foreground">{post.userName}</span>
-                            <span className="text-muted-foreground">{post.content}</span>
+                            <span className="font-semibold text-foreground">
+                              {post.userName}
+                            </span>
+                            <span className="text-muted-foreground">
+                              {post.content}
+                            </span>
                           </div>
-                          
+
                           {post.eventName && (
                             <div className="inline-flex items-center gap-1 bg-eco-sky/10 text-eco-sky px-2 py-1 rounded-full text-xs mb-2">
                               <Calendar className="w-3 h-3" />
                               {post.eventName}
                             </div>
                           )}
-                          
+
                           {post.pointsEarned && (
                             <div className="inline-flex items-center gap-1 bg-eco-sage/10 text-eco-sage px-2 py-1 rounded-full text-xs mb-2">
-                              <Sparkles className="w-3 h-3" />
-                              +{post.pointsEarned} points
+                              <Sparkles className="w-3 h-3" />+
+                              {post.pointsEarned} points
                             </div>
                           )}
-                          
+
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">{getTimeAgo(post.timestamp)}</span>
-                            
+                            <span className="text-xs text-muted-foreground">
+                              {getTimeAgo(post.timestamp)}
+                            </span>
+
                             <div className="flex items-center gap-4">
-                              <button 
+                              <button
                                 onClick={() => handleLike(post.id)}
                                 className={`flex items-center gap-1 text-sm transition-colors ${
-                                  post.isLiked 
-                                    ? 'text-red-500 hover:text-red-600' 
-                                    : 'text-muted-foreground hover:text-red-500'
+                                  post.isLiked
+                                    ? "text-red-500 hover:text-red-600"
+                                    : "text-muted-foreground hover:text-red-500"
                                 }`}
                               >
-                                <Heart className={`w-4 h-4 ${post.isLiked ? 'fill-current' : ''}`} />
+                                <Heart
+                                  className={`w-4 h-4 ${post.isLiked ? "fill-current" : ""}`}
+                                />
                                 {post.likes}
                               </button>
-                              
-                              <Button 
-                                size="sm" 
+
+                              <Button
+                                size="sm"
                                 variant="ghost"
                                 onClick={() => {
-                                  const member = members.find(m => m.name === post.userName);
+                                  const member = members.find(
+                                    (m) => m.name === post.userName,
+                                  );
                                   if (member && !member.isCurrentUser) {
                                     handleSendPoints(member);
                                   }
@@ -425,7 +487,10 @@ export default function Community() {
         </div>
 
         {/* Point Transfer Modal */}
-        <Dialog open={showPointTransferModal} onOpenChange={setShowPointTransferModal}>
+        <Dialog
+          open={showPointTransferModal}
+          onOpenChange={setShowPointTransferModal}
+        >
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
@@ -436,7 +501,7 @@ export default function Community() {
                 Transfer points to {selectedMember?.name}
               </DialogDescription>
             </DialogHeader>
-            
+
             {selectedMember && (
               <div className="space-y-4">
                 <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
@@ -448,10 +513,12 @@ export default function Community() {
                   </Avatar>
                   <div>
                     <p className="font-semibold">{selectedMember.name}</p>
-                    <p className="text-sm text-muted-foreground">{selectedMember.points} points</p>
+                    <p className="text-sm text-muted-foreground">
+                      {selectedMember.points} points
+                    </p>
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="amount">Amount to send</Label>
                   <Input
@@ -467,7 +534,7 @@ export default function Community() {
                     You have {userPoints} points available
                   </p>
                 </div>
-                
+
                 {transferAmount && parseInt(transferAmount) > 0 && (
                   <div className="bg-muted/50 rounded-lg p-3 space-y-1">
                     <div className="flex justify-between text-sm">
@@ -476,7 +543,9 @@ export default function Community() {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span>Sending:</span>
-                      <span className="font-semibold">{transferAmount} points</span>
+                      <span className="font-semibold">
+                        {transferAmount} points
+                      </span>
                     </div>
                     <div className="flex justify-between text-sm border-t pt-1">
                       <span>After transfer:</span>
@@ -488,14 +557,21 @@ export default function Community() {
                 )}
               </div>
             )}
-            
+
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowPointTransferModal(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowPointTransferModal(false)}
+              >
                 Cancel
               </Button>
-              <Button 
+              <Button
                 onClick={confirmPointTransfer}
-                disabled={!transferAmount || parseInt(transferAmount) <= 0 || parseInt(transferAmount) > userPoints}
+                disabled={
+                  !transferAmount ||
+                  parseInt(transferAmount) <= 0 ||
+                  parseInt(transferAmount) > userPoints
+                }
                 className="bg-gradient-to-r from-eco-sage to-eco-sky hover:from-eco-sage/90 hover:to-eco-sky/90"
               >
                 Confirm Transfer

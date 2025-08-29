@@ -10,7 +10,7 @@ interface PlaceholderPageProps {
 
 export default function PlaceholderPage({ title }: PlaceholderPageProps) {
   const location = useLocation();
-  
+
   // Determine user role from path
   const getUserRole = () => {
     if (location.pathname.startsWith("/admin")) return "admin";
@@ -19,7 +19,7 @@ export default function PlaceholderPage({ title }: PlaceholderPageProps) {
   };
 
   const userRole = getUserRole();
-  
+
   const getOrganizationName = () => {
     if (userRole === "ngo") return "Green Earth Foundation";
     return undefined;
@@ -27,23 +27,29 @@ export default function PlaceholderPage({ title }: PlaceholderPageProps) {
 
   const getUserName = () => {
     switch (userRole) {
-      case "admin": return "Admin User";
-      case "ngo": return "NGO Admin";
-      default: return "User";
+      case "admin":
+        return "Admin User";
+      case "ngo":
+        return "NGO Admin";
+      default:
+        return "User";
     }
   };
 
   const getBackRoute = () => {
     switch (userRole) {
-      case "admin": return "/admin/dashboard";
-      case "ngo": return "/ngo/dashboard";
-      default: return "/user/dashboard";
+      case "admin":
+        return "/admin/dashboard";
+      case "ngo":
+        return "/ngo/dashboard";
+      default:
+        return "/user/dashboard";
     }
   };
 
   return (
-    <DashboardLayout 
-      userRole={userRole} 
+    <DashboardLayout
+      userRole={userRole}
       userName={getUserName()}
       organizationName={getOrganizationName()}
     >
@@ -53,31 +59,32 @@ export default function PlaceholderPage({ title }: PlaceholderPageProps) {
             <div className="w-16 h-16 bg-eco-sky/10 rounded-full flex items-center justify-center mx-auto mb-6">
               <Construction className="w-8 h-8 text-eco-sky" />
             </div>
-            
+
             <h1 className="text-2xl font-bold text-foreground mb-4">{title}</h1>
-            
+
             <p className="text-muted-foreground mb-6">
-              This page is currently under development. Our team is working hard to bring you this feature soon!
+              This page is currently under development. Our team is working hard
+              to bring you this feature soon!
             </p>
-            
+
             <div className="space-y-3">
-              <Button 
+              <Button
                 onClick={() => window.history.back()}
-                variant="outline" 
+                variant="outline"
                 className="w-full"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Go Back
               </Button>
-              
-              <Button 
-                onClick={() => window.location.href = getBackRoute()}
+
+              <Button
+                onClick={() => (window.location.href = getBackRoute())}
                 className="w-full bg-primary hover:bg-primary/90"
               >
                 Return to Dashboard
               </Button>
             </div>
-            
+
             <div className="mt-8 pt-6 border-t border-border">
               <p className="text-xs text-muted-foreground">
                 Have suggestions for this feature?{" "}

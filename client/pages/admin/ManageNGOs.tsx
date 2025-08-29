@@ -23,15 +23,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { 
-  Building2, 
-  Search, 
-  Eye, 
-  Ban, 
+import {
+  Building2,
+  Search,
+  Eye,
+  Ban,
   CheckCircle,
   Calendar,
   Users,
-  TrendingUp
+  TrendingUp,
 } from "lucide-react";
 
 interface NGO {
@@ -56,27 +56,27 @@ export default function ManageNGOs() {
       totalMembers: 150,
       status: "active",
       joinedDate: "2023-06-15",
-      lastActivity: "2024-01-20"
+      lastActivity: "2024-01-20",
     },
     {
       id: "2",
-      organizationName: "Ocean Cleanup Initiative", 
+      organizationName: "Ocean Cleanup Initiative",
       contactEmail: "admin@oceancleanup.org",
       totalEvents: 18,
       totalMembers: 89,
       status: "active",
       joinedDate: "2023-08-22",
-      lastActivity: "2024-01-19"
+      lastActivity: "2024-01-19",
     },
     {
       id: "3",
       organizationName: "Solar Communities Network",
-      contactEmail: "info@solarcommunities.net", 
+      contactEmail: "info@solarcommunities.net",
       totalEvents: 32,
       totalMembers: 245,
       status: "active",
       joinedDate: "2023-04-10",
-      lastActivity: "2024-01-18"
+      lastActivity: "2024-01-18",
     },
     {
       id: "4",
@@ -86,7 +86,7 @@ export default function ManageNGOs() {
       totalMembers: 67,
       status: "suspended",
       joinedDate: "2023-09-05",
-      lastActivity: "2023-12-15"
+      lastActivity: "2023-12-15",
     },
     {
       id: "5",
@@ -96,28 +96,33 @@ export default function ManageNGOs() {
       totalMembers: 320,
       status: "active",
       joinedDate: "2023-03-18",
-      lastActivity: "2024-01-21"
-    }
+      lastActivity: "2024-01-21",
+    },
   ]);
 
-  const filteredNgos = ngos.filter(ngo =>
-    ngo.organizationName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    ngo.contactEmail.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredNgos = ngos.filter(
+    (ngo) =>
+      ngo.organizationName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ngo.contactEmail.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const handleSuspend = (id: string) => {
-    setNgos(prev => prev.map(ngo => 
-      ngo.id === id ? { ...ngo, status: "suspended" as const } : ngo
-    ));
+    setNgos((prev) =>
+      prev.map((ngo) =>
+        ngo.id === id ? { ...ngo, status: "suspended" as const } : ngo,
+      ),
+    );
   };
 
   const handleActivate = (id: string) => {
-    setNgos(prev => prev.map(ngo => 
-      ngo.id === id ? { ...ngo, status: "active" as const } : ngo
-    ));
+    setNgos((prev) =>
+      prev.map((ngo) =>
+        ngo.id === id ? { ...ngo, status: "active" as const } : ngo,
+      ),
+    );
   };
 
-  const totalActiveNGOs = ngos.filter(ngo => ngo.status === "active").length;
+  const totalActiveNGOs = ngos.filter((ngo) => ngo.status === "active").length;
   const totalEvents = ngos.reduce((sum, ngo) => sum + ngo.totalEvents, 0);
   const totalMembers = ngos.reduce((sum, ngo) => sum + ngo.totalMembers, 0);
 
@@ -126,7 +131,9 @@ export default function ManageNGOs() {
       <div className="space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">Manage NGOs</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-2">
+            Manage NGOs
+          </h1>
           <p className="text-muted-foreground">
             Monitor and manage all registered organizations on the platform
           </p>
@@ -139,7 +146,9 @@ export default function ManageNGOs() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Active NGOs</p>
-                  <p className="text-2xl font-bold text-eco-forest">{totalActiveNGOs}</p>
+                  <p className="text-2xl font-bold text-eco-forest">
+                    {totalActiveNGOs}
+                  </p>
                 </div>
                 <Building2 className="w-8 h-8 text-eco-forest/60" />
               </div>
@@ -151,7 +160,9 @@ export default function ManageNGOs() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Events</p>
-                  <p className="text-2xl font-bold text-eco-sky">{totalEvents}</p>
+                  <p className="text-2xl font-bold text-eco-sky">
+                    {totalEvents}
+                  </p>
                 </div>
                 <Calendar className="w-8 h-8 text-eco-sky/60" />
               </div>
@@ -163,7 +174,9 @@ export default function ManageNGOs() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Members</p>
-                  <p className="text-2xl font-bold text-eco-earth">{totalMembers}</p>
+                  <p className="text-2xl font-bold text-eco-earth">
+                    {totalMembers}
+                  </p>
                 </div>
                 <Users className="w-8 h-8 text-eco-earth/60" />
               </div>
@@ -174,8 +187,12 @@ export default function ManageNGOs() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Avg Events/NGO</p>
-                  <p className="text-2xl font-bold text-eco-sage">{Math.round(totalEvents / ngos.length)}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Avg Events/NGO
+                  </p>
+                  <p className="text-2xl font-bold text-eco-sage">
+                    {Math.round(totalEvents / ngos.length)}
+                  </p>
                 </div>
                 <TrendingUp className="w-8 h-8 text-eco-sage/60" />
               </div>
@@ -221,9 +238,12 @@ export default function ManageNGOs() {
                     <TableRow key={ngo.id}>
                       <TableCell>
                         <div>
-                          <p className="font-medium text-foreground">{ngo.organizationName}</p>
+                          <p className="font-medium text-foreground">
+                            {ngo.organizationName}
+                          </p>
                           <p className="text-sm text-muted-foreground">
-                            Joined {new Date(ngo.joinedDate).toLocaleDateString()}
+                            Joined{" "}
+                            {new Date(ngo.joinedDate).toLocaleDateString()}
                           </p>
                         </div>
                       </TableCell>
@@ -239,15 +259,19 @@ export default function ManageNGOs() {
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Users className="w-4 h-4 text-eco-earth" />
-                          <span className="font-medium">{ngo.totalMembers}</span>
+                          <span className="font-medium">
+                            {ngo.totalMembers}
+                          </span>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge 
-                          variant={ngo.status === "active" ? "default" : "secondary"}
+                        <Badge
+                          variant={
+                            ngo.status === "active" ? "default" : "secondary"
+                          }
                           className={
-                            ngo.status === "active" 
-                              ? "bg-eco-forest/10 text-eco-forest border-eco-forest/20" 
+                            ngo.status === "active"
+                              ? "bg-eco-forest/10 text-eco-forest border-eco-forest/20"
                               : "bg-destructive/10 text-destructive border-destructive/20"
                           }
                         >
@@ -273,12 +297,12 @@ export default function ManageNGOs() {
                             <Eye className="w-4 h-4 mr-1" />
                             View
                           </Button>
-                          
+
                           {ngo.status === "active" ? (
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
-                                <Button 
-                                  size="sm" 
+                                <Button
+                                  size="sm"
                                   variant="outline"
                                   className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
                                 >
@@ -288,10 +312,15 @@ export default function ManageNGOs() {
                               </AlertDialogTrigger>
                               <AlertDialogContent>
                                 <AlertDialogHeader>
-                                  <AlertDialogTitle>Suspend Organization</AlertDialogTitle>
+                                  <AlertDialogTitle>
+                                    Suspend Organization
+                                  </AlertDialogTitle>
                                   <AlertDialogDescription>
-                                    Are you sure you want to suspend <strong>{ngo.organizationName}</strong>? 
-                                    This will prevent them from creating new events and managing their community until reactivated.
+                                    Are you sure you want to suspend{" "}
+                                    <strong>{ngo.organizationName}</strong>?
+                                    This will prevent them from creating new
+                                    events and managing their community until
+                                    reactivated.
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
@@ -308,7 +337,7 @@ export default function ManageNGOs() {
                           ) : (
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
-                                <Button 
+                                <Button
                                   size="sm"
                                   className="bg-eco-forest hover:bg-eco-forest/90 text-white"
                                 >
@@ -318,10 +347,14 @@ export default function ManageNGOs() {
                               </AlertDialogTrigger>
                               <AlertDialogContent>
                                 <AlertDialogHeader>
-                                  <AlertDialogTitle>Activate Organization</AlertDialogTitle>
+                                  <AlertDialogTitle>
+                                    Activate Organization
+                                  </AlertDialogTitle>
                                   <AlertDialogDescription>
-                                    Are you sure you want to reactivate <strong>{ngo.organizationName}</strong>? 
-                                    This will restore their access to create events and manage their community.
+                                    Are you sure you want to reactivate{" "}
+                                    <strong>{ngo.organizationName}</strong>?
+                                    This will restore their access to create
+                                    events and manage their community.
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
@@ -347,9 +380,13 @@ export default function ManageNGOs() {
             {filteredNgos.length === 0 && (
               <div className="text-center py-12">
                 <Building2 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-foreground mb-2">No organizations found</h3>
+                <h3 className="text-lg font-medium text-foreground mb-2">
+                  No organizations found
+                </h3>
                 <p className="text-muted-foreground">
-                  {searchTerm ? "Try adjusting your search terms" : "No organizations have been registered yet"}
+                  {searchTerm
+                    ? "Try adjusting your search terms"
+                    : "No organizations have been registered yet"}
                 </p>
               </div>
             )}

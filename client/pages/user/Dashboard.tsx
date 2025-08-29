@@ -4,17 +4,17 @@ import UserLayout from "@/components/UserLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Flame, 
-  Sparkles, 
-  Trophy, 
+import {
+  Flame,
+  Sparkles,
+  Trophy,
   Calendar,
   Clock,
   MapPin,
   Users,
   ArrowRight,
   Target,
-  Star
+  Star,
 } from "lucide-react";
 
 interface UpcomingEvent {
@@ -28,14 +28,14 @@ interface UpcomingEvent {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  
+
   // User data - would come from API/context in real app
   const userName = "Alex Johnson";
   const currentStreak = 45; // Changed to be multiple of 30 for demo
   const totalPoints = 2850;
   const globalRank = 42;
   const totalUsers = 5000;
-  
+
   const [upcomingEvents] = useState<UpcomingEvent[]>([
     {
       id: "1",
@@ -43,7 +43,7 @@ export default function Dashboard() {
       date: "2024-02-15",
       time: "09:00",
       location: "Central Park",
-      organizer: "Green Earth Foundation"
+      organizer: "Green Earth Foundation",
     },
     {
       id: "2",
@@ -51,7 +51,7 @@ export default function Dashboard() {
       date: "2024-02-18",
       time: "07:30",
       location: "Marina Beach",
-      organizer: "Ocean Cleanup Initiative"
+      organizer: "Ocean Cleanup Initiative",
     },
     {
       id: "3",
@@ -59,8 +59,8 @@ export default function Dashboard() {
       date: "2024-02-22",
       time: "14:00",
       location: "Community Center",
-      organizer: "Green Earth Foundation"
-    }
+      organizer: "Green Earth Foundation",
+    },
   ]);
 
   const getGreeting = () => {
@@ -100,11 +100,9 @@ export default function Dashboard() {
                 <p className="text-xl font-semibold text-orange-700 mb-2">
                   Day Streak! 🔥
                 </p>
-                <p className="text-sm text-orange-600">
-                  Amazing consistency!
-                </p>
+                <p className="text-sm text-orange-600">Amazing consistency!</p>
               </div>
-              
+
               {hasMultiplierActive && (
                 <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 text-sm font-bold animate-pulse">
                   🎉 2x Points Multiplier Active!
@@ -146,7 +144,7 @@ export default function Dashboard() {
                 <p className="text-sm text-blue-600 mb-4">
                   Log your daily eco-habits and keep your streak alive!
                 </p>
-                <Button 
+                <Button
                   onClick={() => navigate("/user/habits")}
                   className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-3 shadow-lg"
                 >
@@ -191,9 +189,13 @@ export default function Dashboard() {
               {upcomingEvents.length === 0 ? (
                 <div className="text-center py-8">
                   <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No upcoming events</h3>
-                  <p className="text-gray-600 mb-4">Discover environmental events in your community</p>
-                  <Button 
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    No upcoming events
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    Discover environmental events in your community
+                  </p>
+                  <Button
                     onClick={() => navigate("/user/events")}
                     variant="outline"
                   >
@@ -203,19 +205,22 @@ export default function Dashboard() {
               ) : (
                 <div className="space-y-4">
                   {upcomingEvents.slice(0, 3).map((event) => (
-                    <div 
+                    <div
                       key={event.id}
                       className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                     >
                       <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900 mb-1">{event.name}</h4>
+                        <h4 className="font-semibold text-gray-900 mb-1">
+                          {event.name}
+                        </h4>
                         <div className="flex items-center gap-4 text-sm text-gray-600">
                           <div className="flex items-center gap-1">
                             <Clock className="w-4 h-4" />
-                            {new Date(event.date).toLocaleDateString('en-US', { 
-                              month: 'short', 
-                              day: 'numeric' 
-                            })} at {event.time}
+                            {new Date(event.date).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                            })}{" "}
+                            at {event.time}
                           </div>
                           <div className="flex items-center gap-1">
                             <MapPin className="w-4 h-4" />
@@ -230,10 +235,10 @@ export default function Dashboard() {
                       <ArrowRight className="w-5 h-5 text-gray-400" />
                     </div>
                   ))}
-                  
+
                   <div className="text-center pt-4">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       onClick={() => navigate("/user/events")}
                     >
                       View All Events
@@ -252,27 +257,33 @@ export default function Dashboard() {
               <div className="flex items-center justify-center gap-2">
                 <Star className="w-5 h-5 text-yellow-500" />
                 <span className="font-semibold">This Week:</span>
-                <span className="text-lg font-bold text-green-600">+245 pts</span>
+                <span className="text-lg font-bold text-green-600">
+                  +245 pts
+                </span>
               </div>
             </CardContent>
           </Card>
-          
+
           <Card className="bg-gray-50">
             <CardContent className="p-4 text-center">
               <div className="flex items-center justify-center gap-2">
                 <Users className="w-5 h-5 text-blue-500" />
                 <span className="font-semibold">Communities:</span>
-                <span className="text-lg font-bold text-blue-600">3 joined</span>
+                <span className="text-lg font-bold text-blue-600">
+                  3 joined
+                </span>
               </div>
             </CardContent>
           </Card>
-          
+
           <Card className="bg-gray-50">
             <CardContent className="p-4 text-center">
               <div className="flex items-center justify-center gap-2">
                 <Target className="w-5 h-5 text-purple-500" />
                 <span className="font-semibold">This Month:</span>
-                <span className="text-lg font-bold text-purple-600">28/30 days</span>
+                <span className="text-lg font-bold text-purple-600">
+                  28/30 days
+                </span>
               </div>
             </CardContent>
           </Card>

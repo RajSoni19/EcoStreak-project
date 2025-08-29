@@ -1,14 +1,14 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { 
-  Leaf, 
-  LayoutDashboard, 
-  CheckSquare, 
-  Trophy, 
-  Users, 
+import {
+  Leaf,
+  LayoutDashboard,
+  CheckSquare,
+  Trophy,
+  Users,
   Store,
-  LogOut
+  LogOut,
 } from "lucide-react";
 
 interface NavigationItem {
@@ -19,7 +19,7 @@ interface NavigationItem {
 
 export default function Sidebar() {
   const navigate = useNavigate();
-  
+
   const navigation: NavigationItem[] = [
     { name: "Dashboard", href: "/user/dashboard", icon: LayoutDashboard },
     { name: "Log Habits", href: "/user/habits", icon: CheckSquare },
@@ -56,7 +56,7 @@ export default function Sidebar() {
         <ul className="space-y-2">
           {navigation.map((item) => {
             const Icon = item.icon;
-            
+
             return (
               <li key={item.name}>
                 <NavLink
@@ -84,22 +84,23 @@ export default function Sidebar() {
           <Avatar className="w-10 h-10">
             <AvatarImage src="" />
             <AvatarFallback className="bg-eco-forest text-white">
-              {userName.split(" ").map(n => n[0]).join("")}
+              {userName
+                .split(" ")
+                .map((n) => n[0])
+                .join("")}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-gray-900 truncate">
               {userName}
             </p>
-            <p className="text-xs text-gray-500 truncate">
-              {userEmail}
-            </p>
+            <p className="text-xs text-gray-500 truncate">{userEmail}</p>
           </div>
         </div>
-        
-        <Button 
+
+        <Button
           onClick={handleLogout}
-          variant="outline" 
+          variant="outline"
           className="w-full justify-start gap-2 text-gray-700 hover:text-red-600 hover:border-red-300"
         >
           <LogOut className="w-4 h-4" />

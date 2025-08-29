@@ -50,16 +50,34 @@ const App = () => (
           {/* Admin Routes */}
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/ngos" element={<ManageNGOs />} />
-          <Route path="/admin/settings" element={<PlaceholderPage title="Admin Settings" />} />
-          <Route path="/admin/reports" element={<PlaceholderPage title="Platform Reports" />} />
+          <Route
+            path="/admin/settings"
+            element={<PlaceholderPage title="Admin Settings" />}
+          />
+          <Route
+            path="/admin/reports"
+            element={<PlaceholderPage title="Platform Reports" />}
+          />
 
           {/* NGO Routes */}
           <Route path="/ngo/dashboard" element={<NGODashboard />} />
           <Route path="/ngo/events" element={<NGOEvents />} />
-          <Route path="/ngo/events/create" element={<PlaceholderPage title="Create Event" />} />
-          <Route path="/ngo/rewards" element={<PlaceholderPage title="Rewards Store Management" />} />
-          <Route path="/ngo/community" element={<PlaceholderPage title="Community Management" />} />
-          <Route path="/ngo/settings" element={<PlaceholderPage title="NGO Settings" />} />
+          <Route
+            path="/ngo/events/create"
+            element={<PlaceholderPage title="Create Event" />}
+          />
+          <Route
+            path="/ngo/rewards"
+            element={<PlaceholderPage title="Rewards Store Management" />}
+          />
+          <Route
+            path="/ngo/community"
+            element={<PlaceholderPage title="Community Management" />}
+          />
+          <Route
+            path="/ngo/settings"
+            element={<PlaceholderPage title="NGO Settings" />}
+          />
 
           {/* User Routes */}
           <Route path="/user/dashboard" element={<UserDashboard />} />
@@ -68,11 +86,20 @@ const App = () => (
           <Route path="/user/store" element={<UserStore />} />
           <Route path="/user/communities" element={<UserCommunities />} />
           <Route path="/user/community/:id" element={<UserCommunity />} />
-          <Route path="/user/events" element={<PlaceholderPage title="Browse Events" />} />
-          <Route path="/user/settings" element={<PlaceholderPage title="User Settings" />} />
+          <Route
+            path="/user/events"
+            element={<PlaceholderPage title="Browse Events" />}
+          />
+          <Route
+            path="/user/settings"
+            element={<PlaceholderPage title="User Settings" />}
+          />
 
           {/* Utility Routes */}
-          <Route path="/forgot-password" element={<PlaceholderPage title="Reset Password" />} />
+          <Route
+            path="/forgot-password"
+            element={<PlaceholderPage title="Reset Password" />}
+          />
 
           {/* 404 Route */}
           <Route path="*" element={<NotFound />} />
