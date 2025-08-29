@@ -1,61 +1,51 @@
-import { DemoResponse } from "@shared/api";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Leaf } from "lucide-react";
 
 export default function Index() {
-  const [exampleFromServer, setExampleFromServer] = useState("");
-  // Fetch users on component mount
-  useEffect(() => {
-    fetchDemo();
-  }, []);
+  const navigate = useNavigate();
 
-  // Example of how to fetch data from the server (if needed)
-  const fetchDemo = async () => {
-    try {
-      const response = await fetch("/api/demo");
-      const data = (await response.json()) as DemoResponse;
-      setExampleFromServer(data.message);
-    } catch (error) {
-      console.error("Error fetching hello:", error);
-    }
-  };
+  useEffect(() => {
+    // Redirect to login after a brief moment
+    const timer = setTimeout(() => {
+      navigate("/login");
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
-      <div className="text-center">
-        {/* TODO: FUSION_GENERATION_APP_PLACEHOLDER replace everything here with the actual app! */}
-        <h1 className="text-2xl font-semibold text-slate-800 flex items-center justify-center gap-3">
-          <svg
-            className="animate-spin h-8 w-8 text-slate-400"
-            viewBox="0 0 50 50"
-          >
-            <circle
-              className="opacity-30"
-              cx="25"
-              cy="25"
-              r="20"
-              stroke="currentColor"
-              strokeWidth="5"
-              fill="none"
-            />
-            <circle
-              className="text-slate-600"
-              cx="25"
-              cy="25"
-              r="20"
-              stroke="currentColor"
-              strokeWidth="5"
-              fill="none"
-              strokeDasharray="100"
-              strokeDashoffset="75"
-            />
-          </svg>
-          Generating your app...
-        </h1>
-        <p className="mt-4 text-slate-600 max-w-md">
-          Watch the chat on the left for updates that might need your attention
-          to finish generating
+    <div className="min-h-screen bg-gradient-to-br from-eco-forest/20 via-eco-leaf/10 to-eco-sky/20 flex items-center justify-center p-4">
+      <div className="text-center max-w-2xl">
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-primary rounded-full mb-8 shadow-lg">
+          <Leaf className="w-10 h-10 text-primary-foreground" />
+        </div>
+
+        <h1 className="text-5xl font-bold text-eco-forest mb-4">EcoConnect</h1>
+        <p className="text-xl text-muted-foreground mb-8">
+          Building sustainable communities together through environmental action
         </p>
-        <p className="mt-4 hidden max-w-md">{exampleFromServer}</p>
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button
+            onClick={() => navigate("/login")}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3"
+          >
+            Sign In
+          </Button>
+          <Button
+            onClick={() => navigate("/register")}
+            variant="outline"
+            className="px-8 py-3"
+          >
+            Create Account
+          </Button>
+        </div>
+
+        <p className="text-sm text-muted-foreground mt-8">
+          Redirecting to login in a moment...
+        </p>
       </div>
     </div>
   );
