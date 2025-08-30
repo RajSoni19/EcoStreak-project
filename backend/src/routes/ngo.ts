@@ -74,21 +74,50 @@ router.get('/events', [
 ], getNGOEvents);
 
 router.post('/events', [
+  // Add debugging middleware to log the request body
+  (req: any, res: any, next: any) => {
+    console.log('🔍 NGO Event Creation - Request Body:', JSON.stringify(req.body, null, 2));
+    console.log('🔍 NGO Event Creation - Request Headers:', req.headers);
+    next();
+  },
   body('title').isString().trim().isLength({ min: 3, max: 200 }).withMessage('Title must be between 3 and 200 characters'),
   body('description').isString().trim().isLength({ min: 10, max: 2000 }).withMessage('Description must be between 10 and 2000 characters'),
-  body('startDate').isISO8601().withMessage('Start date must be a valid date'),
-  body('endDate').isISO8601().withMessage('End date must be a valid date'),
+  body('startDate').custom((value) => {
+    if (!value) return false;
+    const date = new Date(value);
+    return !isNaN(date.getTime());
+  }).withMessage('Start date must be a valid date'),
+  body('endDate').custom((value) => {
+    if (!value) return false;
+    const date = new Date(value);
+    return !isNaN(date.getTime());
+  }).withMessage('End date must be a valid date'),
   body('location.address').isString().trim().notEmpty().withMessage('Address is required'),
   body('location.city').isString().trim().notEmpty().withMessage('City is required'),
   body('location.state').isString().trim().notEmpty().withMessage('State is required'),
   body('location.country').isString().trim().notEmpty().withMessage('Country is required'),
+  body('location.isVirtual').optional().custom((value) => {
+    if (value === undefined || value === null) return true;
+    return typeof value === 'boolean';
+  }).withMessage('isVirtual must be a boolean'),
+  body('location.virtualLink').optional().isString().trim().withMessage('Virtual link must be a string'),
   body('category').isIn(['workshop', 'cleanup', 'tree-planting', 'awareness', 'fundraiser', 'meeting', 'volunteer', 'other']).withMessage('Invalid category'),
   body('tags').optional().isArray().withMessage('Tags must be an array'),
   body('maxParticipants').optional().isInt({ min: 1 }).withMessage('Max participants must be at least 1'),
   body('pointsForAttendance').optional().isInt({ min: 0 }).withMessage('Points for attendance cannot be negative'),
   body('pointsForCompletion').optional().isInt({ min: 0 }).withMessage('Points for completion cannot be negative'),
-  body('isPublic').optional().isBoolean().withMessage('isPublic must be a boolean'),
+  body('isPublic').optional().custom((value) => {
+    if (value === undefined || value === null) return true;
+    return typeof value === 'boolean';
+  }).withMessage('isPublic must be a boolean'),
   body('community').optional().isMongoId().withMessage('Invalid community ID'),
+  // Custom validation for virtual events
+  body().custom((value, { req }) => {
+    if (value.location && value.location.isVirtual === true && (!value.location.virtualLink || value.location.virtualLink.trim() === '')) {
+      throw new Error('Virtual meeting link is required for virtual events');
+    }
+    return true;
+  }),
   validateRequest,
 ], createNGOEvent);
 
@@ -103,6 +132,8 @@ router.put('/events/:eventId', [
   body('location.city').optional().isString().trim().notEmpty().withMessage('City cannot be empty'),
   body('location.state').optional().isString().trim().notEmpty().withMessage('State cannot be empty'),
   body('location.country').optional().isString().trim().notEmpty().withMessage('Country cannot be empty'),
+  body('location.isVirtual').optional().isBoolean().withMessage('isVirtual must be a boolean'),
+  body('location.virtualLink').optional().isString().trim().withMessage('Virtual link must be a string'),
   body('category').optional().isIn(['workshop', 'cleanup', 'tree-planting', 'awareness', 'fundraiser', 'meeting', 'volunteer', 'other']).withMessage('Invalid category'),
   body('tags').optional().isArray().withMessage('Tags must be an array'),
   body('maxParticipants').optional().isInt({ min: 1 }).withMessage('Max participants must be at least 1'),
@@ -110,6 +141,13 @@ router.put('/events/:eventId', [
   body('pointsForCompletion').optional().isInt({ min: 0 }).withMessage('Points for completion cannot be negative'),
   body('isPublic').optional().isBoolean().withMessage('isPublic must be a boolean'),
   body('community').optional().isMongoId().withMessage('Invalid community ID'),
+  // Custom validation for virtual events
+  body().custom((value, { req }) => {
+    if (value.location && value.location.isVirtual === true && (!value.location.virtualLink || value.location.virtualLink.trim() === '')) {
+      throw new Error('Virtual meeting link is required for virtual events');
+    }
+    return true;
+  }),
   validateRequest,
 ], updateNGOEvent);
 
@@ -186,46 +224,61 @@ router.get('/store/products', [
 ], getNGOStoreProducts);
 
 router.post('/store/products', [
+  // Add debugging middleware to log the request body
+  (req: any, res: any, next: any) => {
+    console.log('🔍 NGO Store Product Creation - Request Body:', JSON.stringify(req.body, null, 2));
+    console.log('🔍 NGO Store Product Creation - Request Headers:', req.headers);
+    next();
+  },
   body('name').isString().trim().isLength({ min: 3, max: 100 }).withMessage('Product name must be between 3 and 100 characters'),
   body('description').isString().trim().isLength({ min: 10, max: 1000 }).withMessage('Description must be between 10 and 1000 characters'),
-  body('category').isIn(['eco-products', 'sustainable-fashion', 'organic-food', 'renewable-energy', 'zero-waste', 'fair-trade', 'other']).withMessage('Invalid category'),
+  body('category').isIn(['eco-friendly', 'sustainable', 'renewable', 'organic', 'recycled', 'energy-efficient', 'water-saving', 'other']).withMessage('Invalid category'),
   body('tags').optional().isArray().withMessage('Tags must be an array'),
-  body('price').isFloat({ min: 0 }).withMessage('Price must be a positive number'),
-  body('pointsCost').isInt({ min: 0 }).withMessage('Points cost must be a non-negative integer'),
-  body('stock').isInt({ min: 0 }).withMessage('Stock must be a non-negative integer'),
-  body('location.address').isString().trim().notEmpty().withMessage('Address is required'),
-  body('location.city').isString().trim().notEmpty().withMessage('City is required'),
-  body('location.state').isString().trim().notEmpty().withMessage('State is required'),
-  body('location.country').isString().trim().notEmpty().withMessage('Country is required'),
-  body('contact.email').isEmail().withMessage('Valid contact email is required'),
-  body('contact.phone').optional().isMobilePhone('any').withMessage('Invalid phone number'),
-  body('contact.website').optional().isURL().withMessage('Invalid website URL'),
-  body('socialMedia.facebook').optional().isURL().withMessage('Invalid Facebook URL'),
-  body('socialMedia.instagram').optional().isURL().withMessage('Invalid Instagram URL'),
-  body('socialMedia.twitter').optional().isURL().withMessage('Invalid Twitter URL'),
-  body('socialMedia.linkedin').optional().isURL().withMessage('Invalid LinkedIn URL'),
+  body('price').custom((value) => {
+    const num = Number(value);
+    return !isNaN(num) && num >= 0;
+  }).withMessage('Price must be a positive number'),
+  body('pointsCost').custom((value) => {
+    const num = Number(value);
+    return !isNaN(num) && num >= 0 && Number.isInteger(num);
+  }).withMessage('Points cost must be a non-negative integer'),
+  body('stock').custom((value) => {
+    const num = Number(value);
+    return !isNaN(num) && num >= 0 && Number.isInteger(num);
+  }).withMessage('Stock must be a non-negative integer'),
+  body('location.address').optional().isString().trim().withMessage('Address must be a string'),
+  body('location.city').optional().isString().trim().withMessage('City must be a string'),
+  body('location.state').optional().isString().trim().withMessage('State must be a string'),
+  body('location.country').optional().isString().trim().withMessage('Country must be a string'),
+  body('contact.email').optional().isEmail().withMessage('Contact email must be a valid email'),
+  body('contact.phone').optional().isString().trim().withMessage('Phone must be a string'),
+  body('contact.website').optional().isString().trim().withMessage('Website must be a string'),
+  body('socialMedia.facebook').optional().isString().trim().withMessage('Facebook must be a string'),
+  body('socialMedia.instagram').optional().isString().trim().withMessage('Instagram must be a string'),
+  body('socialMedia.twitter').optional().isString().trim().withMessage('Twitter must be a string'),
+  body('socialMedia.linkedin').optional().isString().trim().withMessage('LinkedIn must be a string'),
   validateRequest,
 ], createNGOStoreProduct);
 
 router.put('/store/products/:productId', [
   body('name').optional().isString().trim().isLength({ min: 3, max: 100 }).withMessage('Product name must be between 3 and 100 characters'),
   body('description').optional().isString().trim().isLength({ min: 10, max: 1000 }).withMessage('Description must be between 10 and 1000 characters'),
-  body('category').optional().isIn(['eco-products', 'sustainable-fashion', 'organic-food', 'renewable-energy', 'zero-waste', 'fair-trade', 'other']).withMessage('Invalid category'),
+  body('category').optional().isIn(['eco-friendly', 'sustainable', 'renewable', 'organic', 'recycled', 'energy-efficient', 'water-saving', 'other']).withMessage('Invalid category'),
   body('tags').optional().isArray().withMessage('Tags must be an array'),
   body('price').optional().isFloat({ min: 0 }).withMessage('Price must be a positive number'),
   body('pointsCost').optional().isInt({ min: 0 }).withMessage('Points cost must be a non-negative integer'),
   body('stock').optional().isInt({ min: 0 }).withMessage('Stock must be a non-negative integer'),
-  body('location.address').optional().isString().trim().notEmpty().withMessage('Address cannot be empty'),
-  body('location.city').optional().isString().trim().notEmpty().withMessage('City cannot be empty'),
-  body('location.state').optional().isString().trim().notEmpty().withMessage('State cannot be empty'),
-  body('location.country').optional().isString().trim().notEmpty().withMessage('Country cannot be empty'),
-  body('contact.email').optional().isEmail().withMessage('Valid contact email is required'),
-  body('contact.phone').optional().isMobilePhone('any').withMessage('Invalid phone number'),
-  body('contact.website').optional().isURL().withMessage('Invalid website URL'),
-  body('socialMedia.facebook').optional().isURL().withMessage('Invalid Facebook URL'),
-  body('socialMedia.instagram').optional().isURL().withMessage('Invalid Instagram URL'),
-  body('socialMedia.twitter').optional().isURL().withMessage('Invalid Twitter URL'),
-  body('socialMedia.linkedin').optional().isURL().withMessage('Invalid LinkedIn URL'),
+  body('location.address').optional().isString().trim().withMessage('Address must be a string'),
+  body('location.city').optional().isString().trim().withMessage('City must be a string'),
+  body('location.state').optional().isString().trim().withMessage('State must be a string'),
+  body('location.country').optional().isString().trim().withMessage('Country must be a string'),
+  body('contact.email').optional().isEmail().withMessage('Contact email must be a valid email'),
+  body('contact.phone').optional().isString().trim().withMessage('Phone must be a string'),
+  body('contact.website').optional().isString().trim().withMessage('Website must be a string'),
+  body('socialMedia.facebook').optional().isString().trim().withMessage('Facebook must be a string'),
+  body('socialMedia.instagram').optional().isString().trim().withMessage('Instagram must be a string'),
+  body('socialMedia.twitter').optional().isString().trim().withMessage('Twitter must be a string'),
+  body('socialMedia.linkedin').optional().isString().trim().withMessage('LinkedIn must be a string'),
   body('isActive').optional().isBoolean().withMessage('isActive must be a boolean'),
   validateRequest,
 ], updateNGOStoreProduct);
@@ -285,7 +338,7 @@ router.post('/rewards', [
   body('name').isString().trim().isLength({ min: 3, max: 100 }).withMessage('Reward name must be between 3 and 100 characters'),
   body('description').isString().trim().isLength({ min: 10, max: 1000 }).withMessage('Description must be between 10 and 1000 characters'),
   body('pointsCost').isInt({ min: 1 }).withMessage('Points cost must be at least 1'),
-  body('category').optional().isIn(['eco-products', 'sustainable-fashion', 'organic-food', 'renewable-energy', 'zero-waste', 'fair-trade', 'other']),
+  body('category').optional().isIn(['eco-friendly', 'sustainable', 'renewable', 'organic', 'recycled', 'energy-efficient', 'water-saving', 'other']),
   body('image').optional().isString().trim().isURL().withMessage('Invalid image URL'),
   body('isActive').optional().isBoolean().withMessage('isActive must be a boolean'),
   body('maxRedemptions').optional().isInt({ min: -1 }).withMessage('Max redemptions must be -1 (unlimited) or a positive number'),
@@ -296,7 +349,7 @@ router.put('/rewards/:rewardId', [
   body('name').optional().isString().trim().isLength({ min: 3, max: 100 }).withMessage('Reward name must be between 3 and 100 characters'),
   body('description').optional().isString().trim().isLength({ min: 10, max: 1000 }).withMessage('Description must be between 10 and 1000 characters'),
   body('pointsCost').optional().isInt({ min: 1 }).withMessage('Points cost must be at least 1'),
-  body('category').optional().isIn(['eco-products', 'sustainable-fashion', 'organic-food', 'renewable-energy', 'zero-waste', 'fair-trade', 'other']),
+  body('category').optional().isIn(['eco-friendly', 'sustainable', 'renewable', 'organic', 'recycled', 'energy-efficient', 'water-saving', 'other']),
   body('image').optional().isString().trim().isURL().withMessage('Invalid image URL'),
   body('isActive').optional().isBoolean().withMessage('isActive must be a boolean'),
   body('maxRedemptions').optional().isInt({ min: -1 }).withMessage('Max redemptions must be -1 (unlimited) or a positive number'),

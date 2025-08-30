@@ -32,6 +32,8 @@ interface EventFormData {
     city: string;
     state: string;
     country: string;
+    isVirtual: boolean;
+    virtualLink?: string;
   };
   category: string;
   tags: string[];
@@ -56,6 +58,8 @@ export default function CreateEvent() {
       city: "",
       state: "",
       country: "",
+      isVirtual: false,
+      virtualLink: "",
     },
     category: "workshop",
     tags: [],
@@ -91,10 +95,105 @@ export default function CreateEvent() {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Frontend validation
+    if (formData.title.length < 3) {
+      toast({
+        title: "Validation Error",
+        description: "Title must be at least 3 characters long",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (formData.description.length < 10) {
+      toast({
+        title: "Validation Error",
+        description: "Description must be at least 10 characters long",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!formData.location.address || !formData.location.city || !formData.location.state || !formData.location.country) {
+      toast({
+        title: "Validation Error",
+        description: "All location fields are required",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (formData.location.isVirtual && !formData.location.virtualLink) {
+      toast({
+        title: "Validation Error",
+        description: "Virtual meeting link is required for virtual events",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Validate dates
+    if (!formData.startDate || !formData.endDate) {
+      toast({
+        title: "Validation Error",
+        description: "Start and end dates are required",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const startDate = new Date(formData.startDate);
+    const endDate = new Date(formData.endDate);
+    
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      toast({
+        title: "Validation Error",
+        description: "Invalid date format",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (endDate <= startDate) {
+      toast({
+        title: "Validation Error",
+        description: "End date must be after start date",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Create a copy of formData with proper date format and ensure all required fields
+    const submissionData = {
+      ...formData,
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+      // Ensure required fields are present
+      title: formData.title.trim(),
+      description: formData.description.trim(),
+      location: {
+        address: formData.location.address.trim(),
+        city: formData.location.city.trim(),
+        state: formData.location.state.trim(),
+        country: formData.location.country.trim(),
+        isVirtual: formData.location.isVirtual,
+        virtualLink: formData.location.virtualLink || ""
+      },
+      category: formData.category,
+      tags: formData.tags,
+      maxParticipants: formData.maxParticipants || undefined,
+      pointsForAttendance: formData.pointsForAttendance || 0,
+      pointsForCompletion: formData.pointsForCompletion || 0,
+      isPublic: formData.isPublic !== undefined ? formData.isPublic : true
+    };
+    
+    console.log('Data being submitted:', JSON.stringify(submissionData, null, 2));
+    
     setIsSubmitting(true);
 
     try {
-      const response = await apiService.createNGOEvent(formData);
+      const response = await apiService.createNGOEvent(submissionData);
       if (response.success) {
         toast({
           title: "Success",
@@ -102,14 +201,41 @@ export default function CreateEvent() {
         });
         navigate("/ngo/events");
       }
-    } catch (error: any) {
-      console.error('Error creating event:', error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to create event",
-        variant: "destructive",
-      });
-    } finally {
+         } catch (error: any) {
+       console.error('Error creating event:', error);
+       
+       // Log the form data being sent
+       console.log('Form data being sent:', JSON.stringify(formData, null, 2));
+       
+       // Show more detailed error message
+       let errorMessage = error.message || "Failed to create event";
+       
+       // Try to extract validation errors from different possible locations
+       if (error.errors && Array.isArray(error.errors)) {
+         errorMessage = error.errors.join(', ');
+       } else if (error.response && error.response.errors) {
+         errorMessage = error.response.errors.join(', ');
+       } else if (error.data && error.data.errors) {
+         errorMessage = error.data.errors.join(', ');
+       } else if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+         errorMessage = error.response.data.errors.join(', ');
+       } else if (error.response?.data?.message) {
+         errorMessage = error.response.data.message;
+       }
+       
+       // Log the full error response for debugging
+       console.log('Full error response:', error);
+       console.log('Error errors array:', error.errors);
+       console.log('Error response:', error.response);
+       console.log('Error data:', error.data);
+       console.log('Error response data:', error.response?.data);
+       
+       toast({
+         title: "Error",
+         description: errorMessage,
+         variant: "destructive",
+       });
+     } finally {
       setIsSubmitting(false);
     }
   };
@@ -156,7 +282,11 @@ export default function CreateEvent() {
                       onChange={(e) => setFormData({...formData, title: e.target.value})}
                       placeholder="e.g., Urban Garden Workshop"
                       required
+                      minLength={3}
                     />
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {formData.title.length}/200 characters (minimum 3 required)
+                    </p>
                   </div>
                   
                   <div>
@@ -183,10 +313,15 @@ export default function CreateEvent() {
                     id="description"
                     value={formData.description}
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    placeholder="Describe your event in detail..."
+                    placeholder="Provide a detailed description of your event (minimum 10 characters)..."
                     rows={4}
                     required
+                    minLength={10}
+                    className="min-h-[120px]"
                   />
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {formData.description.length}/2000 characters (minimum 10 required)
+                  </p>
                 </div>
 
                 {/* Tags */}
@@ -303,10 +438,58 @@ export default function CreateEvent() {
                       required
                     />
                   </div>
-                </div>
-              </div>
-
-              {/* Participation and Points */}
+                                 </div>
+                 
+                 {/* Virtual Event Settings */}
+                 <div className="space-y-4">
+                   <h3 className="text-lg font-semibold flex items-center gap-2">
+                     <Award className="w-5 h-5" />
+                     Virtual Event Settings
+                   </h3>
+                   
+                   <div className="space-y-4">
+                     <div className="flex items-center space-x-2">
+                       <input
+                         type="checkbox"
+                         id="isVirtual"
+                         checked={formData.location.isVirtual}
+                         onChange={(e) => setFormData({
+                           ...formData, 
+                           location: {
+                             ...formData.location, 
+                             isVirtual: e.target.checked,
+                             virtualLink: e.target.checked ? formData.location.virtualLink : ""
+                           }
+                         })}
+                         className="rounded"
+                       />
+                       <Label htmlFor="isVirtual">This is a virtual event</Label>
+                     </div>
+                     
+                     {formData.location.isVirtual && (
+                       <div>
+                         <Label htmlFor="virtualLink">Virtual Meeting Link *</Label>
+                         <Input
+                           id="virtualLink"
+                           type="url"
+                           value={formData.location.virtualLink}
+                           onChange={(e) => setFormData({
+                             ...formData, 
+                             location: {
+                               ...formData.location, 
+                               virtualLink: e.target.value
+                             }
+                           })}
+                           placeholder="https://meet.google.com/..."
+                           required={formData.location.isVirtual}
+                         />
+                       </div>
+                     )}
+                   </div>
+                 </div>
+               </div>
+ 
+               {/* Participation and Points */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold flex items-center gap-2">
                   <Users className="w-5 h-5" />

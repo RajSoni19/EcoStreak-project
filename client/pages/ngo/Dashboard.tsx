@@ -11,12 +11,7 @@ import {
   Clock,
   MapPin,
   Plus,
-  ArrowRight,
-  TrendingUp,
-  Award,
   RefreshCw,
-  Activity,
-  BarChart3,
   AlertCircle,
 } from "lucide-react";
 import { apiService } from "@/lib/api";
@@ -380,7 +375,7 @@ export default function NGODashboard() {
                   </p>
                 </div>
                 <div className="w-12 h-12 rounded-lg bg-eco-sage/10 flex items-center justify-center">
-                  <Award className="w-6 h-6 text-eco-sage" />
+                  <CheckCircle className="w-6 h-6 text-eco-sage" />
                 </div>
               </div>
             </CardContent>
@@ -499,7 +494,7 @@ export default function NGODashboard() {
                       className="ml-4"
                       onClick={() => navigate(`/ngo/events/${event._id}`)}
                     >
-                      <ArrowRight className="w-4 h-4" />
+                      View
                     </Button>
                   </div>
                 ))}
@@ -524,7 +519,7 @@ export default function NGODashboard() {
           <Card className="border-0 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Activity className="w-5 h-5" />
+                <CheckCircle className="w-5 h-5" />
                 Recent Activities
               </CardTitle>
             </CardHeader>
@@ -572,7 +567,27 @@ export default function NGODashboard() {
                     Create and edit your environmental events
                   </p>
                 </div>
-                <ArrowRight className="w-5 h-5 text-muted-foreground" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card 
+            className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => navigate("/ngo/store")}
+          >
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-lg bg-eco-forest/10 flex items-center justify-center">
+                  <Calendar className="w-6 h-6 text-eco-forest" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-foreground mb-1">
+                    Manage Store
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Add and manage eco-friendly products
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -588,101 +603,12 @@ export default function NGODashboard() {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-foreground mb-1">
-                    Community
+                    Manage Communities
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    Manage your eco-community members
+                    Build and manage your communities
                   </p>
                 </div>
-                <ArrowRight className="w-5 h-5 text-muted-foreground" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card 
-            className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-            onClick={() => navigate("/ngo/store")}
-          >
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-lg bg-eco-sage/10 flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-eco-sage" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-foreground mb-1">
-                    Rewards Store
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Manage environmental rewards
-                  </p>
-                </div>
-                <ArrowRight className="w-5 h-5 text-muted-foreground" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card 
-            className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-            onClick={() => navigate("/ngo/analytics")}
-          >
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-lg bg-eco-forest/10 flex items-center justify-center">
-                  <BarChart3 className="w-6 h-6 text-eco-forest" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-foreground mb-1">
-                    Analytics
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    View detailed performance metrics
-                  </p>
-                </div>
-                <ArrowRight className="w-5 h-5 text-muted-foreground" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card 
-            className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-            onClick={() => navigate("/ngo/rewards")}
-          >
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-lg bg-eco-sage/10 flex items-center justify-center">
-                  <Award className="w-6 h-6 text-eco-sage" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-foreground mb-1">
-                    Manage Rewards
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Create and manage point-based rewards
-                  </p>
-                </div>
-                <ArrowRight className="w-5 h-5 text-muted-foreground" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card 
-            className="border-0 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-            onClick={() => navigate("/ngo/notifications")}
-          >
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-lg bg-eco-sky/10 flex items-center justify-center">
-                  <Activity className="w-6 h-6 text-eco-sky" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-foreground mb-1">
-                    Notifications
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Send updates to your community
-                  </p>
-                </div>
-                <ArrowRight className="w-5 h-5 text-muted-foreground" />
               </div>
             </CardContent>
           </Card>

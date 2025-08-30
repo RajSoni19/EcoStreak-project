@@ -32,20 +32,51 @@ const createEventValidation = [
   body('endDate')
     .isISO8601()
     .withMessage('End date must be a valid ISO date'),
-  body('location')
+  body('location.address')
+    .isString()
     .trim()
     .isLength({ min: 3, max: 200 })
-    .withMessage('Location must be between 3 and 200 characters'),
+    .withMessage('Address must be between 3 and 200 characters'),
+  body('location.city')
+    .isString()
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('City must be between 2 and 100 characters'),
+  body('location.state')
+    .isString()
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('State must be between 2 and 100 characters'),
+  body('location.country')
+    .isString()
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('Country must be between 2 and 100 characters'),
+  body('location.isVirtual')
+    .optional()
+    .isBoolean()
+    .withMessage('isVirtual must be a boolean'),
+  body('location.virtualLink')
+    .optional()
+    .isURL()
+    .withMessage('Virtual link must be a valid URL'),
   body('maxParticipants')
+    .optional()
     .isInt({ min: 1, max: 1000 })
     .withMessage('Max participants must be between 1 and 1000'),
-  body('pointsAwarded')
+  body('pointsForAttendance')
+    .optional()
     .isInt({ min: 0, max: 1000 })
-    .withMessage('Points awarded must be between 0 and 1000'),
+    .withMessage('Points for attendance must be between 0 and 1000'),
+  body('pointsForCompletion')
+    .optional()
+    .isInt({ min: 0, max: 1000 })
+    .withMessage('Points for completion must be between 0 and 1000'),
   body('category')
-    .isIn(['environmental', 'sustainability', 'conservation', 'renewable-energy', 'waste-reduction', 'biodiversity', 'climate-action', 'education', 'other'])
+    .isIn(['workshop', 'cleanup', 'tree-planting', 'awareness', 'fundraiser', 'meeting', 'volunteer', 'other'])
     .withMessage('Invalid category'),
   body('tags')
+    .optional()
     .isArray({ min: 0, max: 10 })
     .withMessage('Tags must be an array with maximum 10 items'),
 ];
@@ -69,22 +100,53 @@ const updateEventValidation = [
     .optional()
     .isISO8601()
     .withMessage('End date must be a valid ISO date'),
-  body('location')
+  body('location.address')
     .optional()
+    .isString()
     .trim()
     .isLength({ min: 3, max: 200 })
-    .withMessage('Location must be between 3 and 200 characters'),
+    .withMessage('Address must be between 3 and 200 characters'),
+  body('location.city')
+    .optional()
+    .isString()
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('City must be between 2 and 100 characters'),
+  body('location.state')
+    .optional()
+    .isString()
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('State must be between 2 and 100 characters'),
+  body('location.country')
+    .optional()
+    .isString()
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('Country must be between 2 and 100 characters'),
+  body('location.isVirtual')
+    .optional()
+    .isBoolean()
+    .withMessage('isVirtual must be a boolean'),
+  body('location.virtualLink')
+    .optional()
+    .isURL()
+    .withMessage('Virtual link must be a valid URL'),
   body('maxParticipants')
     .optional()
     .isInt({ min: 1, max: 1000 })
     .withMessage('Max participants must be between 1 and 1000'),
-  body('pointsAwarded')
+  body('pointsForAttendance')
     .optional()
     .isInt({ min: 0, max: 1000 })
-    .withMessage('Points awarded must be between 0 and 1000'),
+    .withMessage('Points for attendance must be between 0 and 1000'),
+  body('pointsForCompletion')
+    .optional()
+    .isInt({ min: 0, max: 1000 })
+    .withMessage('Points for completion must be between 0 and 1000'),
   body('category')
     .optional()
-    .isIn(['environmental', 'sustainability', 'conservation', 'renewable-energy', 'waste-reduction', 'biodiversity', 'climate-action', 'education', 'other'])
+    .isIn(['workshop', 'cleanup', 'tree-planting', 'awareness', 'fundraiser', 'meeting', 'volunteer', 'other'])
     .withMessage('Invalid category'),
   body('tags')
     .optional()

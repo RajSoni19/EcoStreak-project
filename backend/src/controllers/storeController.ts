@@ -4,19 +4,27 @@ import { User } from '@/models/User';
 
 export const createProduct = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, description, price, category, image, stock, pointsCost, ecoRating } = req.body;
+    const { name, description, price, category, image, stock, pointsCost, ecoRating, tags, location, contact, socialMedia } = req.body;
     
+    // Create product with all required fields
     const product = new Store({
       name,
       description,
       price,
       category,
-      image,
+      logo: image, // Map image to logo field
+      tags: tags || [],
       stock,
       pointsCost,
-      ecoRating,
-      seller: req.user._id,
+      owner: req.user._id, // Set owner
+      seller: req.user._id, // Set seller
+      location: location || {},
+      contact: contact || {},
+      socialMedia: socialMedia || {},
       isActive: true,
+      isVerified: false, // Will be verified by admin
+      rating: ecoRating || 0,
+      totalRatings: 0,
     });
 
     await product.save();

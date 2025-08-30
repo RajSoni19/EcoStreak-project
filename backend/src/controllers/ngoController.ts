@@ -215,6 +215,10 @@ export const getNGOEvents = async (req: Request, res: Response) => { // @ts-igno
 // Create NGO Event
 export const createNGOEvent = async (req: Request, res: Response) => { // @ts-ignore - Missing return statements
   try {
+    console.log('🎯 createNGOEvent called');
+    console.log('🎯 Full request body:', JSON.stringify(req.body, null, 2));
+    console.log('🎯 User from request:', req.user);
+    
     const ngoId = req.user._id;
     const {
       title,
@@ -799,6 +803,10 @@ export const getNGOStoreProducts = async (req: Request, res: Response) => { // @
 // Create NGO Store Product
 export const createNGOStoreProduct = async (req: Request, res: Response) => { // @ts-ignore - Missing return statements
   try {
+    console.log('🎯 createNGOStoreProduct called');
+    console.log('🎯 Full request body:', JSON.stringify(req.body, null, 2));
+    console.log('🎯 User from request:', req.user);
+    
     const ngoId = req.user._id;
     const {
       name,
@@ -813,11 +821,32 @@ export const createNGOStoreProduct = async (req: Request, res: Response) => { //
       socialMedia
     } = req.body;
 
+    console.log('Creating NGO store product with data:', {
+      ngoId,
+      name,
+      description,
+      category,
+      price,
+      pointsCost,
+      stock,
+      location,
+      contact,
+      socialMedia
+    });
+
     // Validate required fields
-    if (!name || !description || !category || !price || !pointsCost || !stock || !location || !contact) {
+    if (!name || !description || !category || !price || !pointsCost || !stock) {
       return res.status(400).json({
         success: false,
         message: 'Missing required fields',
+        missing: {
+          name: !name,
+          description: !description,
+          category: !category,
+          price: !price,
+          pointsCost: !pointsCost,
+          stock: !stock
+        }
       });
     }
 
@@ -840,6 +869,8 @@ export const createNGOStoreProduct = async (req: Request, res: Response) => { //
       rating: 0,
       totalRatings: 0,
     });
+
+    console.log('Store product object created:', product);
 
     await product.save();
 

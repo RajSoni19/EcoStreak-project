@@ -60,11 +60,31 @@ class ApiService {
       ...options,
     };
 
+    console.log('API Request:', url);
+    console.log('API Request Config:', {
+      method: config.method,
+      headers: config.headers,
+      body: config.body
+    });
+    if (options.body) {
+      console.log('Request Body:', options.body);
+    }
+
     try {
       const response = await fetch(url, config);
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        console.error('API Error Response:', errorData);
+        
+        // Show detailed validation errors if available
+        if (errorData.details && Array.isArray(errorData.details)) {
+          console.error('Validation Error Details:');
+          errorData.details.forEach((detail: any) => {
+            console.error(`  Field: ${detail.field}, Value: ${detail.value}, Message: ${detail.message}`);
+          });
+        }
+        
         throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
       }
 
@@ -607,6 +627,25 @@ class ApiService {
   // NGO Notification Analytics
   async getNGONotificationAnalytics(period: string = 'month'): Promise<any> {
     return this.request(`/ngo/notification-analytics?period=${period}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+  }
+
+  async updateNGONotification(notificationId: string, data: any): Promise<any> {
+    return this.request(`/ngo/notifications/${notificationId}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteNGONotification(notificationId: string): Promise<any> {
+    return this.request(`/ngo/notifications/${notificationId}`, {
+      method: 'DELETE',
       headers: {
         Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
       },

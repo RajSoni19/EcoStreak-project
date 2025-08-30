@@ -17,14 +17,15 @@ export interface IStore extends Document {
   pointsCost: number;
   stock: number;
   seller: mongoose.Types.ObjectId;
-  location: {
+  // Optional location and contact for products
+  location?: {
     address: string;
     city: string;
     state: string;
     country: string;
     coordinates?: [number, number];
   };
-  contact: {
+  contact?: {
     email: string;
     phone?: string;
     website?: string;
@@ -60,7 +61,7 @@ const storeSchema = new Schema<IStore>({
   category: {
     type: String,
     required: [true, 'Store category is required'],
-    enum: ['eco-products', 'sustainable-fashion', 'organic-food', 'renewable-energy', 'zero-waste', 'fair-trade', 'other'],
+    enum: ['eco-friendly', 'sustainable', 'renewable', 'organic', 'recycled', 'energy-efficient', 'water-saving', 'other'],
   },
   tags: [{
     type: String,
@@ -114,29 +115,31 @@ const storeSchema = new Schema<IStore>({
     ref: 'User',
     required: [true, 'Seller is required'],
   },
+  // Optional location and contact
   location: {
     address: {
       type: String,
-      required: [true, 'Address is required'],
       trim: true,
+      required: false,
     },
     city: {
       type: String,
-      required: [true, 'City is required'],
       trim: true,
+      required: false,
     },
     state: {
       type: String,
-      required: [true, 'State is required'],
       trim: true,
+      required: false,
     },
     country: {
       type: String,
-      required: [true, 'Country is required'],
       trim: true,
+      required: false,
     },
     coordinates: {
       type: [Number],
+      required: false,
       validate: {
         validator: function(v: number[]) {
           if (v.length !== 2) return false;
@@ -150,16 +153,19 @@ const storeSchema = new Schema<IStore>({
   contact: {
     email: {
       type: String,
-      required: [true, 'Contact email is required'],
+      trim: true,
+      required: false,
       match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email'],
     },
     phone: {
       type: String,
       trim: true,
+      required: false,
     },
     website: {
       type: String,
       trim: true,
+      required: false,
     },
   },
   socialMedia: {

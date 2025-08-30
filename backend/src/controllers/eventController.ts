@@ -4,7 +4,7 @@ import { User } from '@/models/User';
 
 export const createEvent = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { title, description, startDate, endDate, location, maxParticipants, pointsAwarded, category, tags } = req.body;
+    const { title, description, startDate, endDate, location, maxParticipants, pointsForAttendance, pointsForCompletion, category, tags } = req.body;
     
     const event = new Event({
       title,
@@ -13,7 +13,8 @@ export const createEvent = async (req: Request, res: Response): Promise<void> =>
       endDate,
       location,
       maxParticipants,
-      pointsAwarded,
+      pointsForAttendance,
+      pointsForCompletion,
       category,
       tags,
       organizer: req.user._id,
