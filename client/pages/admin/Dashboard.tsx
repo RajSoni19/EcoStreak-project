@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -29,76 +29,225 @@ import {
   CheckCircle,
   XCircle,
   Clock,
+  Loader2,
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
-interface PendingRegistration {
-  id: string;
-  organizationName: string;
-  contactEmail: string;
-  dateSubmitted: string;
+interface Organization {
+  _id: string;
+  name: string;
+  email: string;
+  status: 'pending' | 'approved' | 'rejected' | 'suspended';
   description: string;
+  createdAt: string;
+  adminUser: {
+    fullName: string;
+    email: string;
+  };
+  contactPerson: {
+    name: string;
+    email: string;
+    phone: string;
+    position: string;
+  };
+}
+
+interface DashboardStats {
+  totalOrganizations: number;
+  pendingOrganizations: number;
+  totalEvents: number;
 }
 
 export default function AdminDashboard() {
-  const [pendingRegistrations, setPendingRegistrations] = useState<
-    PendingRegistration[]
-  >([
-    {
-      id: "1",
-      organizationName: "Green Earth Foundation",
-      contactEmail: "contact@greenearth.org",
-      dateSubmitted: "2024-01-15",
-      description: "Environmental conservation and restoration projects",
-    },
-    {
-      id: "2",
-      organizationName: "Ocean Cleanup Initiative",
-      contactEmail: "admin@oceancleanup.org",
-      dateSubmitted: "2024-01-18",
-      description: "Marine ecosystem protection and plastic cleanup",
-    },
-    {
-      id: "3",
-      organizationName: "Solar Communities Network",
-      contactEmail: "info@solarcommunities.net",
-      dateSubmitted: "2024-01-20",
-      description: "Renewable energy adoption in rural communities",
-    },
-  ]);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [stats, setStats] = useState<DashboardStats>({
+    totalOrganizations: 0,
+    pendingOrganizations: 0,
+    totalEvents: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [approving, setApproving] = useState<string | null>(null);
+  const [rejecting, setRejecting] = useState<string | null>(null);
+  const { toast } = useToast();
 
-  const handleApprove = (id: string) => {
-    setPendingRegistrations((prev) => prev.filter((reg) => reg.id !== id));
-    // In real app, make API call to approve
+  // Fetch organizations and stats
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      
+      // Get auth token
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        toast({
+          title: "Authentication Error",
+          description: "Please login to access the dashboard",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Fetch pending organizations
+      const orgResponse = await fetch('/api/super-admin/organizations?status=pending', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!orgResponse.ok) {
+        throw new Error('Failed to fetch organizations');
+      }
+
+      const orgData = await orgResponse.json();
+      setOrganizations(orgData.data.organizations || []);
+
+      // Fetch dashboard stats
+      const statsResponse = await fetch('/api/super-admin/dashboard', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (statsResponse.ok) {
+        const statsData = await statsResponse.json();
+        setStats({
+          totalOrganizations: statsData.data.stats.totalOrganizations || 0,
+          pendingOrganizations: statsData.data.stats.pendingOrganizations || 0,
+          totalEvents: statsData.data.stats.totalEvents || 0,
+        });
+      }
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load dashboard data",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDecline = (id: string) => {
-    setPendingRegistrations((prev) => prev.filter((reg) => reg.id !== id));
-    // In real app, make API call to decline
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleApprove = async (organizationId: string) => {
+    try {
+      setApproving(organizationId);
+      
+      const token = localStorage.getItem('accessToken');
+      const response = await fetch(`/api/super-admin/organizations/${organizationId}/approve`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          approvalNotes: 'Organization approved by Super Admin'
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to approve organization');
+      }
+
+      toast({
+        title: "Success",
+        description: "Organization approved successfully",
+      });
+
+      // Refresh data
+      fetchData();
+
+    } catch (error) {
+      console.error('Error approving organization:', error);
+      toast({
+        title: "Error",
+        description: "Failed to approve organization",
+        variant: "destructive",
+      });
+    } finally {
+      setApproving(null);
+    }
   };
 
-  const stats = [
+  const handleReject = async (organizationId: string) => {
+    try {
+      setRejecting(organizationId);
+      
+      const token = localStorage.getItem('accessToken');
+      const response = await fetch(`/api/super-admin/organizations/${organizationId}/reject`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          rejectionReason: 'Organization rejected by Super Admin'
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to reject organization');
+      }
+
+      toast({
+        title: "Success",
+        description: "Organization rejected successfully",
+      });
+
+      // Refresh data
+      fetchData();
+
+    } catch (error) {
+      console.error('Error rejecting organization:', error);
+      toast({
+        title: "Error",
+        description: "Failed to reject organization",
+        variant: "destructive",
+      });
+    } finally {
+      setRejecting(null);
+    }
+  };
+
+  const dashboardStats = [
     {
       title: "Active Organizations",
-      value: "15",
+      value: stats.totalOrganizations.toString(),
       icon: Building2,
       color: "text-eco-forest",
       bgColor: "bg-eco-leaf/10",
     },
     {
       title: "Pending Registrations",
-      value: pendingRegistrations.length.toString(),
+      value: stats.pendingOrganizations.toString(),
       icon: Clock,
       color: "text-eco-sky",
       bgColor: "bg-eco-sky/10",
     },
     {
       title: "Total Events Hosted",
-      value: "128",
+      value: stats.totalEvents.toString(),
       icon: Calendar,
       color: "text-eco-earth",
       bgColor: "bg-eco-earth/10",
     },
   ];
+
+  if (loading) {
+    return (
+      <DashboardLayout userRole="admin" userName="Admin User">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="w-8 h-8 animate-spin text-eco-forest" />
+          <span className="ml-2 text-muted-foreground">Loading dashboard...</span>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout userRole="admin" userName="Admin User">
@@ -115,7 +264,7 @@ export default function AdminDashboard() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {stats.map((stat) => {
+          {dashboardStats.map((stat) => {
             const Icon = stat.icon;
             return (
               <Card key={stat.title} className="border-0 shadow-sm">
@@ -150,7 +299,7 @@ export default function AdminDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {pendingRegistrations.length === 0 ? (
+            {organizations.length === 0 ? (
               <div className="text-center py-12">
                 <CheckCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-foreground mb-2">
@@ -167,30 +316,35 @@ export default function AdminDashboard() {
                     <TableRow>
                       <TableHead>Organization Name</TableHead>
                       <TableHead>Contact Email</TableHead>
+                      <TableHead>Admin User</TableHead>
                       <TableHead>Date Submitted</TableHead>
                       <TableHead>Description</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {pendingRegistrations.map((registration) => (
-                      <TableRow key={registration.id}>
+                    {organizations.map((organization) => (
+                      <TableRow key={organization._id}>
                         <TableCell className="font-medium">
-                          {registration.organizationName}
+                          {organization.name}
                         </TableCell>
                         <TableCell className="text-muted-foreground">
-                          {registration.contactEmail}
+                          {organization.email}
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{organization.adminUser?.fullName}</p>
+                            <p className="text-sm text-muted-foreground">{organization.adminUser?.email}</p>
+                          </div>
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline">
-                            {new Date(
-                              registration.dateSubmitted,
-                            ).toLocaleDateString()}
+                            {new Date(organization.createdAt).toLocaleDateString()}
                           </Badge>
                         </TableCell>
                         <TableCell className="max-w-xs">
                           <p className="text-sm text-muted-foreground truncate">
-                            {registration.description}
+                            {organization.description}
                           </p>
                         </TableCell>
                         <TableCell className="text-right">
@@ -200,8 +354,13 @@ export default function AdminDashboard() {
                                 <Button
                                   size="sm"
                                   className="bg-eco-forest hover:bg-eco-forest/90 text-white"
+                                  disabled={approving === organization._id}
                                 >
-                                  <CheckCircle className="w-4 h-4 mr-1" />
+                                  {approving === organization._id ? (
+                                    <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                                  ) : (
+                                    <CheckCircle className="w-4 h-4 mr-1" />
+                                  )}
                                   Approve
                                 </Button>
                               </AlertDialogTrigger>
@@ -212,19 +371,14 @@ export default function AdminDashboard() {
                                   </AlertDialogTitle>
                                   <AlertDialogDescription>
                                     Are you sure you want to approve{" "}
-                                    <strong>
-                                      {registration.organizationName}
-                                    </strong>
-                                    ? This will grant them access to create
+                                    <strong>{organization.name}</strong>? This will grant them access to create
                                     events and manage their community.
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                                   <AlertDialogAction
-                                    onClick={() =>
-                                      handleApprove(registration.id)
-                                    }
+                                    onClick={() => handleApprove(organization._id)}
                                     className="bg-eco-forest hover:bg-eco-forest/90"
                                   >
                                     Approve
@@ -239,8 +393,13 @@ export default function AdminDashboard() {
                                   size="sm"
                                   variant="outline"
                                   className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                                  disabled={rejecting === organization._id}
                                 >
-                                  <XCircle className="w-4 h-4 mr-1" />
+                                  {rejecting === organization._id ? (
+                                    <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                                  ) : (
+                                    <XCircle className="w-4 h-4 mr-1" />
+                                  )}
                                   Decline
                                 </Button>
                               </AlertDialogTrigger>
@@ -251,19 +410,14 @@ export default function AdminDashboard() {
                                   </AlertDialogTitle>
                                   <AlertDialogDescription>
                                     Are you sure you want to decline{" "}
-                                    <strong>
-                                      {registration.organizationName}
-                                    </strong>
-                                    ? This action cannot be undone and they will
+                                    <strong>{organization.name}</strong>? This action cannot be undone and they will
                                     need to reapply.
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                                   <AlertDialogAction
-                                    onClick={() =>
-                                      handleDecline(registration.id)
-                                    }
+                                    onClick={() => handleReject(organization._id)}
                                     className="bg-destructive hover:bg-destructive/90"
                                   >
                                     Decline

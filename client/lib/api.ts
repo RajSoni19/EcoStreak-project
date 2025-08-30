@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = '/api';
 
 export interface LoginRequest {
   email: string;
@@ -29,6 +29,43 @@ export interface RegisterRequest {
   organizationName?: string;
 }
 
+export interface NGOOrganizationRequest {
+  name: string;
+  email: string;
+  phone: string;
+  website?: string;
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    country: string;
+    zipCode?: string;
+  };
+  description: string;
+  mission: string;
+  focusAreas: string[];
+  establishedYear: number;
+  legalStatus: string;
+  registrationNumber?: string;
+  taxId?: string;
+  contactPerson: {
+    name: string;
+    email: string;
+    phone: string;
+    position: string;
+  };
+  documents?: {
+    registrationCertificate?: string;
+    taxExemptionCertificate?: string;
+    annualReport?: string;
+    otherDocuments?: string[];
+  };
+  adminFullName: string;
+  adminEmail: string;
+  adminPassword: string;
+  adminPhone: string;
+}
+
 export interface RegisterResponse {
   success: boolean;
   message: string;
@@ -42,6 +79,15 @@ export interface RegisterResponse {
     };
     accessToken: string;
     refreshToken: string;
+  };
+}
+
+export interface NGOOrganizationResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    organizationId: string;
+    status: string;
   };
 }
 
@@ -85,7 +131,11 @@ class ApiService {
           });
         }
         
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        // Create a more detailed error with validation details
+        const error = new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        (error as any).details = errorData.details;
+        (error as any).errors = errorData.errors;
+        throw error;
       }
 
       return await response.json();
@@ -108,6 +158,19 @@ class ApiService {
       method: 'POST',
       body: JSON.stringify(data),
     });
+  }
+
+  // NGO Organization registration
+  async registerNGOOrganization(data: NGOOrganizationRequest): Promise<NGOOrganizationResponse> {
+    return this.request<NGOOrganizationResponse>('/organizations/register', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Check organization registration status
+  async checkOrganizationStatus(email: string): Promise<any> {
+    return this.request(`/organizations/status/${email}`);
   }
 
   async getProfile(token: string): Promise<any> {

@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { User } from '@/models/User';
 import { Organization } from '@/models/Organization';
-import bcrypt from 'bcryptjs';
 
 // Register new organization
 export const registerOrganization = async (req: Request, res: Response) => {
@@ -46,13 +45,11 @@ export const registerOrganization = async (req: Request, res: Response) => {
       });
     }
 
-    // Create admin user first
-    const hashedPassword = await bcrypt.hash(adminPassword, 12);
-    
+    // Create admin user first (password will be hashed by the User model pre-save hook)
     const adminUser = new User({
       fullName: adminFullName,
       email: adminEmail,
-      password: hashedPassword,
+      password: adminPassword, // Don't hash here - the User model will handle it
       role: 'ngo',
       organizationName: name,
       phone: adminPhone,

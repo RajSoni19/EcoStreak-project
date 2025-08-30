@@ -104,6 +104,170 @@ const PRODUCT_CATEGORIES = [
   'other'
 ];
 
+// Static sample products data
+const STATIC_PRODUCTS: Product[] = [
+  {
+    _id: "1",
+    name: "Bamboo Water Bottle",
+    description: "Eco-friendly reusable water bottle made from sustainable bamboo. Keeps drinks cold for 24 hours and hot for 12 hours. Perfect for reducing plastic waste.",
+    price: 24.99,
+    pointsCost: 150,
+    category: "eco-friendly",
+    tags: ["bamboo", "reusable", "sustainable"],
+    stock: 45,
+    isActive: true,
+    isVerified: true,
+    rating: 4.8,
+    totalRatings: 127,
+    location: {
+      address: "123 Green Street",
+      city: "New York",
+      state: "NY",
+      country: "USA"
+    },
+    contact: {
+      email: "store@econg.org",
+      phone: "+1-555-0123",
+      website: "https://econg.org"
+    },
+    socialMedia: {
+      instagram: "@econg_store",
+      facebook: "econgstore"
+    },
+    createdAt: "2024-11-01T10:00:00Z",
+    updatedAt: "2024-11-15T10:00:00Z"
+  },
+  {
+    _id: "2",
+    name: "Organic Cotton Tote Bag",
+    description: "Handmade tote bag from 100% organic cotton. Perfect for shopping, carrying books, or as a beach bag. Supports fair trade practices.",
+    price: 18.50,
+    pointsCost: 120,
+    category: "organic",
+    tags: ["cotton", "fair-trade", "handmade"],
+    stock: 32,
+    isActive: true,
+    isVerified: true,
+    rating: 4.6,
+    totalRatings: 89,
+    location: {
+      address: "123 Green Street",
+      city: "New York",
+      state: "NY",
+      country: "USA"
+    },
+    contact: {
+      email: "store@econg.org",
+      phone: "+1-555-0123"
+    },
+    createdAt: "2024-11-05T10:00:00Z",
+    updatedAt: "2024-11-18T10:00:00Z"
+  },
+  {
+    _id: "3",
+    name: "Solar-Powered Phone Charger",
+    description: "Portable solar charger with 10,000mAh battery capacity. Charges phones, tablets, and other USB devices using renewable solar energy.",
+    price: 49.99,
+    pointsCost: 300,
+    category: "renewable",
+    tags: ["solar", "portable", "charging"],
+    stock: 18,
+    isActive: true,
+    isVerified: false,
+    rating: 4.4,
+    totalRatings: 56,
+    location: {
+      address: "123 Green Street",
+      city: "New York",
+      state: "NY",
+      country: "USA"
+    },
+    contact: {
+      email: "store@econg.org"
+    },
+    createdAt: "2024-11-10T10:00:00Z",
+    updatedAt: "2024-11-20T10:00:00Z"
+  },
+  {
+    _id: "4",
+    name: "Recycled Paper Notebook Set",
+    description: "Set of 3 notebooks made from 100% recycled paper. Each notebook has 80 pages and comes in different sizes. Tree-free and eco-conscious.",
+    price: 12.99,
+    pointsCost: 80,
+    category: "recycled",
+    tags: ["paper", "notebook", "tree-free"],
+    stock: 67,
+    isActive: true,
+    isVerified: true,
+    rating: 4.7,
+    totalRatings: 203,
+    location: {
+      address: "123 Green Street",
+      city: "New York",
+      state: "NY",
+      country: "USA"
+    },
+    contact: {
+      email: "store@econg.org",
+      phone: "+1-555-0123"
+    },
+    createdAt: "2024-11-12T10:00:00Z",
+    updatedAt: "2024-11-22T10:00:00Z"
+  },
+  {
+    _id: "5",
+    name: "LED Energy-Saving Bulbs (Pack of 4)",
+    description: "Energy-efficient LED bulbs that use 80% less energy than traditional incandescent bulbs. Last up to 25,000 hours. Warm white light, dimmable.",
+    price: 29.99,
+    pointsCost: 200,
+    category: "energy-efficient",
+    tags: ["LED", "energy-saving", "dimmable"],
+    stock: 28,
+    isActive: true,
+    isVerified: true,
+    rating: 4.9,
+    totalRatings: 156,
+    location: {
+      address: "123 Green Street",
+      city: "New York",
+      state: "NY",
+      country: "USA"
+    },
+    contact: {
+      email: "store@econg.org",
+      phone: "+1-555-0123",
+      website: "https://econg.org"
+    },
+    createdAt: "2024-11-15T10:00:00Z",
+    updatedAt: "2024-11-25T10:00:00Z"
+  },
+  {
+    _id: "6",
+    name: "Water-Saving Shower Head",
+    description: "Low-flow shower head that reduces water usage by 40% while maintaining strong water pressure. Easy to install and saves money on water bills.",
+    price: 34.99,
+    pointsCost: 250,
+    category: "water-saving",
+    tags: ["water-saving", "low-flow", "easy-install"],
+    stock: 15,
+    isActive: true,
+    isVerified: false,
+    rating: 4.3,
+    totalRatings: 42,
+    location: {
+      address: "123 Green Street",
+      city: "New York",
+      state: "NY",
+      country: "USA"
+    },
+    contact: {
+      email: "store@econg.org"
+    },
+    createdAt: "2024-11-18T10:00:00Z",
+    updatedAt: "2024-11-28T10:00:00Z"
+  }
+];
+
 export default function NGOStore() {
   const { toast } = useToast();
   
@@ -151,14 +315,14 @@ export default function NGOStore() {
       setError(null);
       
       const response = await apiService.getNGOStoreProducts();
-      if (response.success) {
-        setProducts(response.data.products || []);
+      if (response.success && response.data?.products?.length > 0) {
+        setProducts(response.data.products);
       } else {
-        setError('Failed to fetch products');
+        // Use static data if no real products are available
+        setProducts(STATIC_PRODUCTS);
       }
     } catch (error: any) {
       console.error('Error fetching products:', error);
-      setError(error.message || 'Failed to load products');
       
       // Handle authentication errors
       if (error.message === 'Invalid token' || error.message.includes('401')) {
@@ -170,10 +334,11 @@ export default function NGOStore() {
         return;
       }
       
+      // Use static data as fallback
+      setProducts(STATIC_PRODUCTS);
       toast({
-        title: "Error",
-        description: "Failed to load store products",
-        variant: "destructive",
+        title: "Info",
+        description: "Using sample data. Real products will load when connected to backend.",
       });
     } finally {
       setIsLoading(false);
@@ -413,6 +578,17 @@ export default function NGOStore() {
     }
     
     try {
+      // For static data, just remove from local state
+      if (STATIC_PRODUCTS.some(product => product._id === productId)) {
+        setProducts(prev => prev.filter(product => product._id !== productId));
+        toast({
+          title: "Success",
+          description: "Product deleted successfully",
+        });
+        return;
+      }
+
+      // For real products, call API
       const response = await apiService.deleteNGOStoreProduct(productId);
       if (response.success) {
         toast({
@@ -434,6 +610,19 @@ export default function NGOStore() {
   // Toggle product status
   const toggleProductStatus = async (product: Product) => {
     try {
+      // For static data, just update local state
+      if (STATIC_PRODUCTS.some(p => p._id === product._id)) {
+        setProducts(prev => prev.map(p => 
+          p._id === product._id ? { ...p, isActive: !p.isActive } : p
+        ));
+        toast({
+          title: "Success",
+          description: `Product ${product.isActive ? 'deactivated' : 'activated'} successfully`,
+        });
+        return;
+      }
+
+      // For real products, call API
       const response = await apiService.updateNGOStoreProduct(product._id, {
         isActive: !product.isActive
       });

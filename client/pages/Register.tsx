@@ -23,7 +23,6 @@ export default function Register() {
     email: "",
     password: "",
     confirmPassword: "",
-    organizationName: "",
     role: "user" as UserRole,
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -56,17 +55,18 @@ export default function Register() {
       newErrors.confirmPassword = "Passwords do not match";
     }
 
-    if (formData.role === "ngo" && !formData.organizationName.trim()) {
-      newErrors.organizationName =
-        "Organization name is required for NGO accounts";
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // If NGO is selected, redirect to NGO registration form
+    if (formData.role === "ngo") {
+      navigate("/register/ngo");
+      return;
+    }
 
     if (!validateForm()) return;
 
@@ -78,7 +78,6 @@ export default function Register() {
         email: formData.email,
         password: formData.password,
         role: formData.role,
-        organizationName: formData.role === 'ngo' ? formData.organizationName : undefined,
       };
 
       const response = await apiService.register(registerData);
@@ -96,11 +95,7 @@ export default function Register() {
         });
 
         // Navigate to appropriate dashboard
-        if (formData.role === "ngo") {
-          navigate("/ngo/dashboard");
-        } else {
-          navigate("/user/dashboard");
-        }
+        navigate("/user/dashboard");
       } else {
         toast({
           title: "Registration failed",
@@ -193,165 +188,160 @@ export default function Register() {
                 </RadioGroup>
               </div>
 
-              {/* Full Name */}
-              <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-sm font-medium">
-                  Full Name
-                </Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="fullName"
-                    type="text"
-                    placeholder="Enter your full name"
-                    value={formData.fullName}
-                    onChange={(e) =>
-                      handleInputChange("fullName", e.target.value)
-                    }
-                    className="pl-10 h-12 border-border/50 focus:border-primary"
-                    required
-                  />
-                </div>
-                {errors.fullName && (
-                  <p className="text-xs text-destructive">{errors.fullName}</p>
-                )}
-              </div>
-
-              {/* Organization Name (conditional) */}
-              {formData.role === "ngo" && (
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="organizationName"
-                    className="text-sm font-medium"
-                  >
-                    Organization Name
-                  </Label>
-                  <div className="relative">
-                    <Building className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="organizationName"
-                      type="text"
-                      placeholder="Enter organization name"
-                      value={formData.organizationName}
-                      onChange={(e) =>
-                        handleInputChange("organizationName", e.target.value)
-                      }
-                      className="pl-10 h-12 border-border/50 focus:border-primary"
-                      required
-                    />
+              {/* Show form only for individual users */}
+              {formData.role === "user" && (
+                <>
+                  {/* Full Name */}
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName" className="text-sm font-medium">
+                      Full Name
+                    </Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="fullName"
+                        type="text"
+                        placeholder="Enter your full name"
+                        value={formData.fullName}
+                        onChange={(e) =>
+                          handleInputChange("fullName", e.target.value)
+                        }
+                        className="pl-10 h-12 border-border/50 focus:border-primary"
+                        required
+                      />
+                    </div>
+                    {errors.fullName && (
+                      <p className="text-xs text-destructive">{errors.fullName}</p>
+                    )}
                   </div>
-                  {errors.organizationName && (
-                    <p className="text-xs text-destructive">
-                      {errors.organizationName}
-                    </p>
-                  )}
+
+                  {/* Email */}
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-sm font-medium">
+                      Email Address
+                    </Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="your@email.com"
+                        value={formData.email}
+                        onChange={(e) => handleInputChange("email", e.target.value)}
+                        className="pl-10 h-12 border-border/50 focus:border-primary"
+                        required
+                      />
+                    </div>
+                    {errors.email && (
+                      <p className="text-xs text-destructive">{errors.email}</p>
+                    )}
+                  </div>
+
+                  {/* Password */}
+                  <div className="space-y-2">
+                    <Label htmlFor="password" className="text-sm font-medium">
+                      Password
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Create a strong password"
+                        value={formData.password}
+                        onChange={(e) =>
+                          handleInputChange("password", e.target.value)
+                        }
+                        className="pl-10 pr-10 h-12 border-border/50 focus:border-primary"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-3 h-4 w-4 text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+                    {errors.password && (
+                      <p className="text-xs text-destructive">{errors.password}</p>
+                    )}
+                  </div>
+
+                  {/* Confirm Password */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="confirmPassword"
+                      className="text-sm font-medium"
+                    >
+                      Confirm Password
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="confirmPassword"
+                        type={showConfirmPassword ? "text" : "password"}
+                        placeholder="Confirm your password"
+                        value={formData.confirmPassword}
+                        onChange={(e) =>
+                          handleInputChange("confirmPassword", e.target.value)
+                        }
+                        className="pl-10 pr-10 h-12 border-border/50 focus:border-primary"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-3 h-4 w-4 text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+                    {errors.confirmPassword && (
+                      <p className="text-xs text-destructive">
+                        {errors.confirmPassword}
+                      </p>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {/* Show message for NGO selection */}
+              {formData.role === "ngo" && (
+                <div className="text-center py-8">
+                  <Building className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                  <h3 className="text-lg font-semibold mb-2">NGO Organization Registration</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Register your organization with detailed information for approval.
+                  </p>
+                  <Button
+                    type="button"
+                    onClick={() => navigate("/register/ngo")}
+                    className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
+                  >
+                    Continue to NGO Registration
+                  </Button>
                 </div>
               )}
 
-              {/* Email */}
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium">
-                  Email Address
-                </Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="your@email.com"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    className="pl-10 h-12 border-border/50 focus:border-primary"
-                    required
-                  />
-                </div>
-                {errors.email && (
-                  <p className="text-xs text-destructive">{errors.email}</p>
-                )}
-              </div>
-
-              {/* Password */}
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium">
-                  Password
-                </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Create a strong password"
-                    value={formData.password}
-                    onChange={(e) =>
-                      handleInputChange("password", e.target.value)
-                    }
-                    className="pl-10 pr-10 h-12 border-border/50 focus:border-primary"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 h-4 w-4 text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-                {errors.password && (
-                  <p className="text-xs text-destructive">{errors.password}</p>
-                )}
-              </div>
-
-              {/* Confirm Password */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="confirmPassword"
-                  className="text-sm font-medium"
+              {/* Submit button only for individual users */}
+              {formData.role === "user" && (
+                <Button
+                  type="submit"
+                  className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
+                  disabled={isLoading}
                 >
-                  Confirm Password
-                </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Confirm your password"
-                    value={formData.confirmPassword}
-                    onChange={(e) =>
-                      handleInputChange("confirmPassword", e.target.value)
-                    }
-                    className="pl-10 pr-10 h-12 border-border/50 focus:border-primary"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-3 h-4 w-4 text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-                {errors.confirmPassword && (
-                  <p className="text-xs text-destructive">
-                    {errors.confirmPassword}
-                  </p>
-                )}
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
-                disabled={isLoading}
-              >
-                {isLoading ? "Creating Account..." : "Create Account"}
-              </Button>
+                  {isLoading ? "Creating Account..." : "Create Account"}
+                </Button>
+              )}
             </form>
 
             <div className="text-center text-sm text-muted-foreground">

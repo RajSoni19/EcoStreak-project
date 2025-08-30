@@ -10,6 +10,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 // Authentication Pages
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import NGORegister from "./pages/NGORegister";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -54,6 +55,7 @@ const App = () => (
           {/* Authentication Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/register/ngo" element={<NGORegister />} />
 
           {/* Admin Routes */}
           <Route path="/admin/dashboard" element={

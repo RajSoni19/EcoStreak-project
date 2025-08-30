@@ -64,6 +64,142 @@ const EVENT_STATUSES = [
   'cancelled'
 ];
 
+// Static sample events data
+const STATIC_EVENTS: Event[] = [
+  {
+    _id: "1",
+    title: "Community Tree Planting Day",
+    description: "Join us for a day of environmental restoration as we plant native trees in our local park. This event will help improve air quality and provide habitat for local wildlife.",
+    startDate: "2024-12-15T09:00:00Z",
+    endDate: "2024-12-15T16:00:00Z",
+    location: {
+      address: "Central Park",
+      city: "New York",
+      state: "NY",
+      country: "USA"
+    },
+    category: "tree-planting",
+    tags: ["environmental", "community", "outdoor"],
+    maxParticipants: 50,
+    participants: Array(35).fill({}).map((_, i) => ({ id: i, name: `Participant ${i + 1}` })),
+    pointsForAttendance: 25,
+    pointsForCompletion: 50,
+    status: "upcoming",
+    isPublic: true,
+    createdAt: "2024-11-01T10:00:00Z"
+  },
+  {
+    _id: "2",
+    title: "Eco-Workshop: Sustainable Living",
+    description: "Learn practical tips for reducing your carbon footprint and living a more sustainable lifestyle. Topics include waste reduction, energy conservation, and eco-friendly products.",
+    startDate: "2024-12-10T14:00:00Z",
+    endDate: "2024-12-10T17:00:00Z",
+    location: {
+      address: "Community Center",
+      city: "New York",
+      state: "NY",
+      country: "USA"
+    },
+    category: "workshop",
+    tags: ["education", "sustainability", "lifestyle"],
+    maxParticipants: 30,
+    participants: Array(28).fill({}).map((_, i) => ({ id: i, name: `Participant ${i + 1}` })),
+    pointsForAttendance: 20,
+    pointsForCompletion: 40,
+    status: "upcoming",
+    isPublic: true,
+    createdAt: "2024-11-05T10:00:00Z"
+  },
+  {
+    _id: "3",
+    title: "Beach Cleanup Initiative",
+    description: "Help us clean up our local beach and protect marine life. We'll provide all necessary equipment and refreshments. This is a family-friendly event.",
+    startDate: "2024-12-20T08:00:00Z",
+    endDate: "2024-12-20T12:00:00Z",
+    location: {
+      address: "Rockaway Beach",
+      city: "New York",
+      state: "NY",
+      country: "USA"
+    },
+    category: "cleanup",
+    tags: ["beach", "marine", "volunteer"],
+    maxParticipants: 100,
+    participants: Array(75).fill({}).map((_, i) => ({ id: i, name: `Participant ${i + 1}` })),
+    pointsForAttendance: 30,
+    pointsForCompletion: 60,
+    status: "upcoming",
+    isPublic: true,
+    createdAt: "2024-11-10T10:00:00Z"
+  },
+  {
+    _id: "4",
+    title: "Climate Change Awareness Seminar",
+    description: "An informative seminar about climate change impacts and solutions. Expert speakers will discuss current research and actionable steps we can take as individuals and communities.",
+    startDate: "2024-12-05T18:00:00Z",
+    endDate: "2024-12-05T20:00:00Z",
+    location: {
+      address: "University Auditorium",
+      city: "New York",
+      state: "NY",
+      country: "USA"
+    },
+    category: "awareness",
+    tags: ["climate", "education", "research"],
+    maxParticipants: 200,
+    participants: Array(180).fill({}).map((_, i) => ({ id: i, name: `Participant ${i + 1}` })),
+    pointsForAttendance: 15,
+    pointsForCompletion: 30,
+    status: "upcoming",
+    isPublic: true,
+    createdAt: "2024-11-15T10:00:00Z"
+  },
+  {
+    _id: "5",
+    title: "Green Fundraiser Gala",
+    description: "Join us for an elegant evening supporting our environmental initiatives. Enjoy local organic cuisine, live music, and learn about our upcoming projects.",
+    startDate: "2024-12-25T19:00:00Z",
+    endDate: "2024-12-25T23:00:00Z",
+    location: {
+      address: "Grand Hotel Ballroom",
+      city: "New York",
+      state: "NY",
+      country: "USA"
+    },
+    category: "fundraiser",
+    tags: ["fundraising", "gala", "networking"],
+    maxParticipants: 150,
+    participants: Array(120).fill({}).map((_, i) => ({ id: i, name: `Participant ${i + 1}` })),
+    pointsForAttendance: 50,
+    pointsForCompletion: 100,
+    status: "upcoming",
+    isPublic: false,
+    createdAt: "2024-11-20T10:00:00Z"
+  },
+  {
+    _id: "6",
+    title: "Volunteer Training Session",
+    description: "Essential training for new volunteers covering safety protocols, event procedures, and our organization's mission. Required for all new volunteers.",
+    startDate: "2024-12-08T10:00:00Z",
+    endDate: "2024-12-08T15:00:00Z",
+    location: {
+      address: "Training Center",
+      city: "New York",
+      state: "NY",
+      country: "USA"
+    },
+    category: "volunteer",
+    tags: ["training", "volunteer", "safety"],
+    maxParticipants: 25,
+    participants: Array(22).fill({}).map((_, i) => ({ id: i, name: `Participant ${i + 1}` })),
+    pointsForAttendance: 25,
+    pointsForCompletion: 50,
+    status: "upcoming",
+    isPublic: false,
+    createdAt: "2024-11-25T10:00:00Z"
+  }
+];
+
 export default function NGOEvents() {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -81,16 +217,22 @@ export default function NGOEvents() {
     try {
       setIsLoading(true);
       const response = await apiService.getNGOEvents();
-      if (response.success) {
+      if (response.success && response.data?.events?.length > 0) {
         setEvents(response.data.events);
         setFilteredEvents(response.data.events);
+      } else {
+        // Use static data if no real events are available
+        setEvents(STATIC_EVENTS);
+        setFilteredEvents(STATIC_EVENTS);
       }
     } catch (error: any) {
       console.error('Error fetching events:', error);
+      // Use static data as fallback
+      setEvents(STATIC_EVENTS);
+      setFilteredEvents(STATIC_EVENTS);
       toast({
-        title: "Error",
-        description: "Failed to load events",
-        variant: "destructive",
+        title: "Info",
+        description: "Using sample data. Real events will load when connected to backend.",
       });
     } finally {
       setIsLoading(false);
@@ -147,6 +289,18 @@ export default function NGOEvents() {
     if (!confirm("Are you sure you want to delete this event?")) return;
 
     try {
+      // For static data, just remove from local state
+      if (STATIC_EVENTS.some(event => event._id === eventId)) {
+        setEvents(prev => prev.filter(event => event._id !== eventId));
+        setFilteredEvents(prev => prev.filter(event => event._id !== eventId));
+        toast({
+          title: "Success",
+          description: "Event deleted successfully",
+        });
+        return;
+      }
+
+      // For real events, call API
       const response = await apiService.deleteNGOEvent(eventId);
       if (response.success) {
         toast({
