@@ -16,6 +16,8 @@ import storeRoutes from '@/routes/store';
 import leaderboardRoutes from '@/routes/leaderboard';
 import ngoRoutes from '@/routes/ngo';
 import communityPostRoutes from '@/routes/communityPosts';
+import superAdminRoutes from '@/routes/superAdmin';
+import organizationRoutes from '@/routes/organization';
 
 // Load environment variables
 dotenv.config();
@@ -88,6 +90,8 @@ app.use('/api/store', storeRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/ngo', ngoRoutes);
 app.use('/api/community-posts', communityPostRoutes);
+app.use('/api/super-admin', superAdminRoutes);
+app.use('/api/organizations', organizationRoutes);
 
 // 404 handler
 app.use((req, res) => {

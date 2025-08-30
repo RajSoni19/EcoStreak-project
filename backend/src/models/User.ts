@@ -10,6 +10,8 @@ export interface IUser extends Document {
   avatar?: string;
   isVerified: boolean;
   isActive: boolean;
+  organizationApproved?: boolean;
+  deactivationReason?: string;
   lastLogin?: Date;
   // NGO-specific fields
   bio?: string;
@@ -73,6 +75,15 @@ const userSchema = new Schema<IUser>({
     type: Boolean,
     default: true,
   },
+  organizationApproved: {
+    type: Boolean,
+    default: false,
+  },
+  deactivationReason: {
+    type: String,
+    trim: true,
+    maxlength: [500, 'Deactivation reason cannot exceed 500 characters'],
+  },
   lastLogin: {
     type: Date,
   },
@@ -127,31 +138,31 @@ const userSchema = new Schema<IUser>({
 userSchema.index({ role: 1 });
 userSchema.index({ isActive: 1 });
 
-// Hash password before saving
-userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-  
-  try {
-    const salt = await bcrypt.genSalt(12);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (error) {
-    next(error as Error);
-  }
-});
+  // Hash password before saving
+  userSchema.pre('save', async function(next) {
+    if (!this.isModified('password')) return next();
+    
+    try {
+      const salt = await bcrypt.genSalt(12);
+      (this as any).password = await bcrypt.hash((this as any).password, salt);
+      next();
+    } catch (error) {
+      next(error as Error);
+    }
+  });
 
-// Compare password method
-userSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
-  try {
-    return await bcrypt.compare(candidatePassword, this.password);
-  } catch (error) {
-    return false;
-  }
-};
+  // Compare password method
+  userSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
+    try {
+      return await bcrypt.compare(candidatePassword, (this as any).password);
+    } catch (error) {
+      return false;
+    }
+  };
 
-// Virtual for user display name
-userSchema.virtual('displayName').get(function() {
-  return this.organizationName || this.fullName;
-});
+  // Virtual for user display name
+  userSchema.virtual('displayName').get(function() {
+    return (this as any).organizationName || (this as any).fullName;
+  });
 
 export const User = mongoose.model<IUser>('User', userSchema);

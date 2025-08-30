@@ -131,6 +131,15 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    // Check organization approval for NGO users
+    if (user.role === 'ngo' && !user.organizationApproved) {
+      res.status(401).json({
+        success: false,
+        message: 'Your organization is pending approval. Please wait for admin approval before logging in.'
+      });
+      return;
+    }
+
     // Check password
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
