@@ -185,7 +185,7 @@ class ApiService {
   }): Promise<any> {
     return this.request('/community-posts', {
       method: 'POST',
-      body: data,
+      body: JSON.stringify(data),
     });
   }
 
@@ -218,7 +218,7 @@ class ApiService {
   }): Promise<any> {
     return this.request(`/community-posts/${postId}/appreciate`, {
       method: 'POST',
-      body: data,
+      body: JSON.stringify(data),
     });
   }
 
@@ -230,7 +230,7 @@ class ApiService {
   }): Promise<any> {
     return this.request(`/community-posts/${postId}`, {
       method: 'PUT',
-      body: data,
+      body: JSON.stringify(data),
     });
   }
 
@@ -296,9 +296,98 @@ class ApiService {
     });
   }
 
+  async createNGOEvent(data: any): Promise<any> {
+    return this.request('/ngo/events', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateNGOEvent(eventId: string, data: any): Promise<any> {
+    return this.request(`/ngo/events/${eventId}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteNGOEvent(eventId: string): Promise<any> {
+    return this.request(`/ngo/events/${eventId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+  }
+
+  async getNGOEventDetails(eventId: string): Promise<any> {
+    return this.request(`/ngo/events/${eventId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+  }
+
+  async getNGOEventParticipants(eventId: string, params?: any): Promise<any> {
+    const queryString = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return this.request(`/ngo/events/${eventId}/participants${queryString}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+  }
+
+  async awardPointsToParticipants(eventId: string, data: {
+    participantIds: string[];
+    points: number;
+    reason?: string;
+  }): Promise<any> {
+    return this.request(`/ngo/events/${eventId}/award-points`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+      body: JSON.stringify(data),
+    });
+  }
+
   async getNGOCommunities(params?: any): Promise<any> {
     const queryString = params ? `?${new URLSearchParams(params).toString()}` : '';
     return this.request(`/ngo/communities${queryString}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+  }
+
+  async createNGOCommunity(data: any): Promise<any> {
+    return this.request('/ngo/communities', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateNGOCommunity(communityId: string, data: any): Promise<any> {
+    return this.request(`/ngo/communities/${communityId}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteNGOCommunity(communityId: string): Promise<any> {
+    return this.request(`/ngo/communities/${communityId}`, {
+      method: 'DELETE',
       headers: {
         Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
       },
@@ -325,6 +414,199 @@ class ApiService {
   async getNGOStoreProducts(params?: any): Promise<any> {
     const queryString = params ? `?${new URLSearchParams(params).toString()}` : '';
     return this.request(`/ngo/store/products${queryString}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+  }
+
+  async createNGOStoreProduct(data: any): Promise<any> {
+    return this.request('/ngo/store/products', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateNGOStoreProduct(productId: string, data: any): Promise<any> {
+    return this.request(`/ngo/store/products/${productId}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteNGOStoreProduct(productId: string): Promise<any> {
+    return this.request(`/ngo/store/products/${productId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+  }
+
+  // NGO Community Posts
+  async getNGOCommunityPosts(params?: any): Promise<any> {
+    const queryString = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return this.request(`/ngo/community-posts${queryString}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+  }
+
+  async createNGOCommunityPost(data: any): Promise<any> {
+    return this.request('/ngo/community-posts', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateNGOCommunityPost(postId: string, data: any): Promise<any> {
+    return this.request(`/ngo/community-posts/${postId}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteNGOCommunityPost(postId: string): Promise<any> {
+    return this.request(`/ngo/community-posts/${postId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+  }
+
+  // NGO Community Engagement Analytics
+  async getNGOCommunityEngagement(period: string = 'month'): Promise<any> {
+    return this.request(`/ngo/community-engagement?period=${period}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+  }
+
+  // NGO Community Member Management
+  async manageNGOCommunityMembers(communityId: string, data: {
+    action: 'add_member' | 'remove_member' | 'add_moderator' | 'remove_moderator';
+    userId: string;
+  }): Promise<any> {
+    return this.request(`/ngo/communities/${communityId}/members`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+      body: JSON.stringify(data),
+    });
+  }
+
+  // NGO Rewards Management
+  async getNGORewards(params?: any): Promise<any> {
+    const queryString = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return this.request(`/ngo/rewards${queryString}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+  }
+
+  async createNGOReward(data: any): Promise<any> {
+    return this.request('/ngo/rewards', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateNGOReward(rewardId: string, data: any): Promise<any> {
+    return this.request(`/ngo/rewards/${rewardId}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteNGOReward(rewardId: string): Promise<any> {
+    return this.request(`/ngo/rewards/${rewardId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+  }
+
+  // NGO User Points Analytics
+  async getNGOUserPointsAnalytics(period: string = 'month'): Promise<any> {
+    return this.request(`/ngo/user-points-analytics?period=${period}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+  }
+
+  // Award Points to Users
+  async awardPointsToUsers(data: {
+    userIds: string[];
+    points: number;
+    reason?: string;
+    eventId?: string;
+  }): Promise<any> {
+    return this.request('/ngo/award-points', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+      body: JSON.stringify(data),
+    });
+  }
+
+  // NGO Dashboard Extended
+  async getNGODashboardExtended(): Promise<any> {
+    return this.request('/ngo/dashboard/extended', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+  }
+
+  // NGO Notifications
+  async getNGONotifications(params?: any): Promise<any> {
+    const queryString = params ? `?${new URLSearchParams(params).toString()}` : '';
+    return this.request(`/ngo/notifications${queryString}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+  }
+
+  async createNGONotification(data: any): Promise<any> {
+    return this.request('/ngo/notifications', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+      body: JSON.stringify(data),
+    });
+  }
+
+  // NGO Notification Analytics
+  async getNGONotificationAnalytics(period: string = 'month'): Promise<any> {
+    return this.request(`/ngo/notification-analytics?period=${period}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
       },

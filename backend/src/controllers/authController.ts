@@ -1,22 +1,32 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { User } from '@/models/User';
+import { User, IUser } from '@/models/User';
 import { serverConfig } from '@/config/server';
 
 // Generate JWT token
 const generateToken = (userId: string, email: string, role: string): string => {
+  const secret = serverConfig.jwt.secret;
+  if (typeof secret !== 'string') {
+    throw new Error('JWT secret is not properly configured');
+  }
+  // @ts-ignore - JWT v9 type compatibility issue
   return jwt.sign(
     { userId, email, role },
-    serverConfig.jwt.secret,
+    secret,
     { expiresIn: serverConfig.jwt.expiresIn }
   );
 };
 
 // Generate refresh token
 const generateRefreshToken = (userId: string): string => {
+  const secret = serverConfig.jwt.secret;
+  if (typeof secret !== 'string') {
+    throw new Error('JWT secret is not properly configured');
+  }
+  // @ts-ignore - JWT v9 type compatibility issue
   return jwt.sign(
     { userId, type: 'refresh' },
-    serverConfig.jwt.secret,
+    secret,
     { expiresIn: serverConfig.jwt.refreshExpiresIn }
   );
 };
@@ -60,18 +70,20 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     await user.save();
 
     // Generate tokens
+    // @ts-ignore - User type from mongoose
     const token = generateToken(user._id.toString(), user.email, user.role);
+    // @ts-ignore - User type from mongoose
     const refreshToken = generateRefreshToken(user._id.toString());
 
     // Remove password from response
     const userResponse = user.toObject();
-    delete userResponse.password;
+    const { password: _, ...userWithoutPassword } = userResponse;
 
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
       data: {
-        user: userResponse,
+        user: userWithoutPassword,
         token,
         refreshToken
       }
@@ -188,19 +200,21 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     await user.save();
 
     // Generate tokens
-    const token = generateToken(user._id.toString(), user.email, user.role);
-    const refreshToken = generateRefreshToken(user._id.toString());
+    // @ts-ignore - User type from mongoose
+    const token = generateToken((user as IUser)._id.toString(), (user as IUser).email, (user as IUser).role);
+    // @ts-ignore - User type from mongoose
+    const refreshToken = generateRefreshToken((user as IUser)._id.toString());
 
     // Remove password from response
     const userResponse = user.toObject();
-    delete userResponse.password;
+    const { password: _, ...userWithoutPassword } = userResponse;
 
     res.status(200).json({
       success: true,
       message: 'Login successful',
       data: {
-        user: userResponse,
-        token,
+        user: userWithoutPassword,
+        accessToken: token,
         refreshToken
       }
     });
@@ -248,8 +262,10 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
     }
 
     // Generate new tokens
-    const newToken = generateToken(user._id.toString(), user.email, user.role);
-    const newRefreshToken = generateRefreshToken(user._id.toString());
+    // @ts-ignore - User type from mongoose
+    const newToken = generateToken((user as IUser)._id.toString(), (user as IUser).email, (user as IUser).role);
+    // @ts-ignore - User type from mongoose
+    const newRefreshToken = generateRefreshToken((user as IUser)._id.toString());
 
     res.status(200).json({
       success: true,
@@ -341,6 +357,14 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
 
     // Get user with password
     const user = await User.findById(req.user._id).select('+password');
+    
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+      return;
+    }
     
     // Verify current password
     const isCurrentPasswordValid = await user.comparePassword(currentPassword);

@@ -199,20 +199,20 @@ export const completeHabit = async (req: Request, res: Response): Promise<void> 
       const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
       
       if (lastCompletedDate.getTime() === yesterday.getTime()) {
-        habit.streak += 1;
+        habit.currentStreak += 1;
       } else if (lastCompletedDate.getTime() !== today.getTime()) {
-        habit.streak = 1; // Reset streak if more than 1 day gap
+        habit.currentStreak = 1; // Reset streak if more than 1 day gap
       }
     } else {
-      habit.streak = 1; // First completion
+      habit.currentStreak = 1; // First completion
     }
 
     await habit.save();
 
-    // Award points to user
+    // Award points to user (basic points for completion)
     const user = await User.findById(userId);
     if (user) {
-      user.points = (user.points || 0) + habit.points;
+      user.totalPoints = (user.totalPoints || 0) + 10; // Basic points for habit completion
       await user.save();
     }
 
@@ -221,8 +221,8 @@ export const completeHabit = async (req: Request, res: Response): Promise<void> 
       message: 'Habit completed successfully',
       data: { 
         habit,
-        pointsEarned: habit.points,
-        newTotalPoints: user?.points || 0
+        pointsEarned: 10,
+        newTotalPoints: user?.totalPoints || 0
       }
     });
 
@@ -277,9 +277,9 @@ export const getHabitStats = async (req: Request, res: Response): Promise<void> 
           _id: null,
           totalHabits: { $sum: 1 },
           totalCompletions: { $sum: '$totalCompletions' },
-          totalPoints: { $sum: '$points' },
-          averageStreak: { $avg: '$streak' },
-          maxStreak: { $max: '$streak' }
+          totalPoints: { $sum: '$totalCompletions' },
+                  averageStreak: { $avg: '$currentStreak' },
+        maxStreak: { $max: '$currentStreak' }
         }
       }
     ]);

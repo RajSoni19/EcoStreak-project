@@ -12,6 +12,11 @@ export interface IStore extends Document {
   isActive: boolean;
   rating: number;
   totalRatings: number;
+  // Product-specific fields
+  price: number;
+  pointsCost: number;
+  stock: number;
+  seller: mongoose.Types.ObjectId;
   location: {
     address: string;
     city: string;
@@ -88,6 +93,27 @@ const storeSchema = new Schema<IStore>({
     type: Number,
     default: 0,
   },
+  // Product-specific fields
+  price: {
+    type: Number,
+    required: [true, 'Price is required'],
+    min: [0, 'Price cannot be negative'],
+  },
+  pointsCost: {
+    type: Number,
+    required: [true, 'Points cost is required'],
+    min: [0, 'Points cost cannot be negative'],
+  },
+  stock: {
+    type: Number,
+    required: [true, 'Stock is required'],
+    min: [0, 'Stock cannot be negative'],
+  },
+  seller: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: [true, 'Seller is required'],
+  },
   location: {
     address: {
       type: String,
@@ -113,7 +139,9 @@ const storeSchema = new Schema<IStore>({
       type: [Number],
       validate: {
         validator: function(v: number[]) {
-          return !v || (v.length === 2 && v[0] >= -180 && v[0] <= 180 && v[1] >= -90 && v[1] <= 90);
+          if (v.length !== 2) return false;
+          const [lon, lat] = v;
+          return lon !== undefined && lat !== undefined && lon >= -180 && lon <= 180 && lat >= -90 && lat <= 90;
         },
         message: 'Invalid coordinates. Must be [longitude, latitude]',
       },

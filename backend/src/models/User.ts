@@ -11,6 +11,11 @@ export interface IUser extends Document {
   isVerified: boolean;
   isActive: boolean;
   lastLogin?: Date;
+  // NGO-specific fields
+  bio?: string;
+  website?: string;
+  phone?: string;
+  address?: string;
   // Streak and points system
   currentStreak: number;
   longestStreak: number;
@@ -70,6 +75,27 @@ const userSchema = new Schema<IUser>({
   },
   lastLogin: {
     type: Date,
+  },
+  // NGO-specific fields
+  bio: {
+    type: String,
+    trim: true,
+    maxlength: [500, 'Bio cannot exceed 500 characters'],
+  },
+  website: {
+    type: String,
+    trim: true,
+    match: [/^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/, 'Please enter a valid URL'],
+  },
+  phone: {
+    type: String,
+    trim: true,
+    match: [/^\+?[\d\s-]{7,15}$/, 'Please enter a valid phone number'],
+  },
+  address: {
+    type: String,
+    trim: true,
+    maxlength: [200, 'Address cannot exceed 200 characters'],
   },
   // Streak and points system
   currentStreak: {

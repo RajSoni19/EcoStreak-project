@@ -83,7 +83,7 @@ export const getCommunityLeaderboard = async (req: Request, res: Response): Prom
       return;
     }
 
-    const memberIds = community.members || [];
+    const memberIds = (community as any).members || [];
     
     const leaderboard = await User.aggregate([
       { $match: { _id: { $in: memberIds }, isActive: true } },
@@ -122,7 +122,7 @@ export const getCommunityLeaderboard = async (req: Request, res: Response): Prom
         },
         community: {
           id: community._id,
-          name: community.name
+          name: (community as any).name
         }
       }
     });
@@ -149,11 +149,11 @@ export const getUserRank = async (req: Request, res: Response): Promise<void> =>
       return;
     }
 
-    const userPoints = user.points || 0;
+    const userPoints = user.totalPoints || 0;
 
     // Get user's global rank
     const globalRank = await User.countDocuments({
-      points: { $gt: userPoints },
+      totalPoints: { $gt: userPoints },
       isActive: true
     }) + 1;
 

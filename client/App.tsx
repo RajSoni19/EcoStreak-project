@@ -18,6 +18,7 @@ import ManageNGOs from "./pages/admin/ManageNGOs";
 // NGO Pages
 import NGODashboard from "./pages/ngo/Dashboard";
 import NGOEvents from "./pages/ngo/Events";
+import CreateEvent from "./pages/ngo/CreateEvent";
 import NGOStore from "./pages/ngo/Store";
 import NGOCommunity from "./pages/ngo/Community";
 
@@ -34,6 +35,9 @@ import EventRegistration from "./pages/user/EventRegistration";
 // Shared Pages
 import NotFound from "./pages/NotFound";
 import PlaceholderPage from "./pages/PlaceholderPage";
+
+// Components
+import AuthGuard from "./components/AuthGuard";
 
 const queryClient = new QueryClient();
 
@@ -52,43 +56,116 @@ const App = () => (
           <Route path="/register" element={<Register />} />
 
           {/* Admin Routes */}
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/ngos" element={<ManageNGOs />} />
+          <Route path="/admin/dashboard" element={
+            <AuthGuard requiredRole="admin">
+              <AdminDashboard />
+            </AuthGuard>
+          } />
+          <Route path="/admin/ngos" element={
+            <AuthGuard requiredRole="admin">
+              <ManageNGOs />
+            </AuthGuard>
+          } />
           <Route
             path="/admin/settings"
-            element={<PlaceholderPage title="Admin Settings" />}
+            element={
+              <AuthGuard requiredRole="admin">
+                <PlaceholderPage title="Admin Settings" />
+              </AuthGuard>
+            }
           />
           <Route
             path="/admin/reports"
-            element={<PlaceholderPage title="Platform Reports" />}
+            element={
+              <AuthGuard requiredRole="admin">
+                <PlaceholderPage title="Platform Reports" />
+              </AuthGuard>
+            }
           />
 
           {/* NGO Routes */}
-          <Route path="/ngo/dashboard" element={<NGODashboard />} />
-          <Route path="/ngo/events" element={<NGOEvents />} />
-          <Route
-            path="/ngo/events/create"
-            element={<PlaceholderPage title="Create Event" />}
-          />
-          <Route path="/ngo/rewards" element={<NGOStore />} />
-          <Route path="/ngo/community" element={<NGOCommunity />} />
+          <Route path="/ngo/dashboard" element={
+            <AuthGuard requiredRole="ngo">
+              <NGODashboard />
+            </AuthGuard>
+          } />
+          <Route path="/ngo/events" element={
+            <AuthGuard requiredRole="ngo">
+              <NGOEvents />
+            </AuthGuard>
+          } />
+          <Route path="/ngo/events/create" element={
+            <AuthGuard requiredRole="ngo">
+              <CreateEvent />
+            </AuthGuard>
+          } />
+          <Route path="/ngo/rewards" element={
+            <AuthGuard requiredRole="ngo">
+              <NGOStore />
+            </AuthGuard>
+          } />
+          <Route path="/ngo/community" element={
+            <AuthGuard requiredRole="ngo">
+              <NGOCommunity />
+            </AuthGuard>
+          } />
           <Route
             path="/ngo/settings"
-            element={<PlaceholderPage title="NGO Settings" />}
+            element={
+              <AuthGuard requiredRole="ngo">
+                <PlaceholderPage title="NGO Settings" />
+              </AuthGuard>
+            }
           />
 
           {/* User Routes */}
-          <Route path="/user/dashboard" element={<UserDashboard />} />
-          <Route path="/user/habits" element={<UserHabits />} />
-          <Route path="/user/leaderboard" element={<UserLeaderboard />} />
-          <Route path="/user/store" element={<UserStore />} />
-          <Route path="/user/communities" element={<UserCommunities />} />
-          <Route path="/user/community/:id" element={<UserCommunity />} />
-          <Route path="/user/community/:id/posts" element={<CommunityPosts />} />
-          <Route path="/user/events" element={<EventRegistration />} />
+          <Route path="/user/dashboard" element={
+            <AuthGuard requiredRole="user">
+              <UserDashboard />
+            </AuthGuard>
+          } />
+          <Route path="/user/habits" element={
+            <AuthGuard requiredRole="user">
+              <UserHabits />
+            </AuthGuard>
+          } />
+          <Route path="/user/leaderboard" element={
+            <AuthGuard requiredRole="user">
+              <UserLeaderboard />
+            </AuthGuard>
+          } />
+          <Route path="/user/store" element={
+            <AuthGuard requiredRole="user">
+              <UserStore />
+            </AuthGuard>
+          } />
+          <Route path="/user/communities" element={
+            <AuthGuard requiredRole="user">
+              <UserCommunities />
+            </AuthGuard>
+          } />
+          <Route path="/user/community/:id" element={
+            <AuthGuard requiredRole="user">
+              <UserCommunity />
+            </AuthGuard>
+          } />
+          <Route path="/user/community/:id/posts" element={
+            <AuthGuard requiredRole="user">
+              <CommunityPosts />
+            </AuthGuard>
+          } />
+          <Route path="/user/events" element={
+            <AuthGuard requiredRole="user">
+              <EventRegistration />
+            </AuthGuard>
+          } />
           <Route
             path="/user/settings"
-            element={<PlaceholderPage title="User Settings" />}
+            element={
+              <AuthGuard requiredRole="user">
+                <PlaceholderPage title="User Settings" />
+              </AuthGuard>
+            }
           />
 
           {/* Utility Routes */}

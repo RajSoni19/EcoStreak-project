@@ -92,7 +92,9 @@ const eventSchema = new Schema<IEvent>({
       type: [Number],
       validate: {
         validator: function(v: number[]) {
-          return !v || (v.length === 2 && v[0] >= -180 && v[0] <= 180 && v[1] >= -90 && v[1] <= 90);
+          if (v.length !== 2) return false;
+          const [lon, lat] = v;
+          return lon !== undefined && lat !== undefined && lon >= -180 && lon <= 180 && lat >= -90 && lat <= 90;
         },
         message: 'Invalid coordinates. Must be [longitude, latitude]',
       },

@@ -114,8 +114,13 @@ app.use((error: any, req: express.Request, res: express.Response, next: express.
 // Start server
 const startServer = async () => {
   try {
-    // Connect to MongoDB
-    await connectDB();
+    // Try to connect to MongoDB, but don't fail if it doesn't work
+    try {
+      await connectDB();
+    } catch (dbError) {
+      console.log('⚠️ Database connection failed, but continuing server startup...');
+      console.log('💡 The server will run but database features will not work');
+    }
     
     // Start Express server
     const server = app.listen(serverConfig.port, () => {

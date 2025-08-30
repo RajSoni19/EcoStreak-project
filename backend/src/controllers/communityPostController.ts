@@ -4,7 +4,7 @@ import { User } from '@/models/User';
 import { Community } from '@/models/Community';
 
 // Create a new community post
-export const createPost = async (req: Request, res: Response) => {
+export const createPost = async (req: Request, res: Response): Promise<Response | void> => {
   try {
     const { communityId, title, content, category, images } = req.body;
     const userId = (req as any).user.id;
@@ -12,17 +12,19 @@ export const createPost = async (req: Request, res: Response) => {
     // Check if user is member of the community
     const community = await Community.findById(communityId);
     if (!community) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         message: 'Community not found',
       });
+      return;
     }
 
     if (!community.members.includes(userId)) {
-      return res.status(403).json({
+      res.status(403).json({
         success: false,
         message: 'You must be a member of this community to post',
       });
+      return;
     }
 
     const post = new CommunityPost({
@@ -56,7 +58,7 @@ export const createPost = async (req: Request, res: Response) => {
 };
 
 // Get posts for a community
-export const getCommunityPosts = async (req: Request, res: Response) => {
+export const getCommunityPosts = async (req: Request, res: Response): Promise<Response | void> => {
   try {
     const { communityId } = req.params;
     const { page = 1, limit = 10, category } = req.query;
@@ -65,17 +67,19 @@ export const getCommunityPosts = async (req: Request, res: Response) => {
     // Check if user is member of the community
     const community = await Community.findById(communityId);
     if (!community) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         message: 'Community not found',
       });
+      return;
     }
 
     if (!community.members.includes(userId)) {
-      return res.status(403).json({
+      res.status(403).json({
         success: false,
         message: 'You must be a member of this community to view posts',
       });
+      return;
     }
 
     const skip = (Number(page) - 1) * Number(limit);
@@ -108,17 +112,17 @@ export const getCommunityPosts = async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
-    console.error('Error getting community posts:', error);
+    console.error('Error fetching posts:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to get community posts',
+      message: 'Failed to fetch posts',
       error: error.message,
     });
   }
 };
 
 // Get a single post
-export const getPost = async (req: Request, res: Response) => {
+export const getPost = async (req: Request, res: Response): Promise<Response | void> => {
   try {
     const { postId } = req.params;
     const userId = (req as any).user.id;
@@ -129,10 +133,11 @@ export const getPost = async (req: Request, res: Response) => {
       .populate('appreciations.user', 'fullName avatar');
 
     if (!post) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         message: 'Post not found',
       });
+      return;
     }
 
     // Check if user is member of the community
@@ -159,7 +164,7 @@ export const getPost = async (req: Request, res: Response) => {
 };
 
 // Like/Unlike a post
-export const toggleLike = async (req: Request, res: Response) => {
+export const toggleLike = async (req: Request, res: Response): Promise<Response | void> => {
   try {
     const { postId } = req.params;
     const userId = (req as any).user.id;
@@ -203,7 +208,7 @@ export const toggleLike = async (req: Request, res: Response) => {
 };
 
 // Appreciate a post with points
-export const appreciatePost = async (req: Request, res: Response) => {
+export const appreciatePost = async (req: Request, res: Response): Promise<Response | void> => {
   try {
     const { postId } = req.params;
     const { points, message } = req.body;
@@ -296,7 +301,7 @@ export const appreciatePost = async (req: Request, res: Response) => {
 };
 
 // Update a post
-export const updatePost = async (req: Request, res: Response) => {
+export const updatePost = async (req: Request, res: Response): Promise<Response | void> => {
   try {
     const { postId } = req.params;
     const { title, content, category, images } = req.body;
@@ -312,10 +317,11 @@ export const updatePost = async (req: Request, res: Response) => {
 
     // Check if user is the author
     if (post.author.toString() !== userId) {
-      return res.status(403).json({
+      res.status(403).json({
         success: false,
         message: 'You can only update your own posts',
       });
+      return;
     }
 
     // Update fields
@@ -346,7 +352,7 @@ export const updatePost = async (req: Request, res: Response) => {
 };
 
 // Delete a post
-export const deletePost = async (req: Request, res: Response) => {
+export const deletePost = async (req: Request, res: Response): Promise<Response | void> => {
   try {
     const { postId } = req.params;
     const userId = (req as any).user.id;
@@ -361,10 +367,11 @@ export const deletePost = async (req: Request, res: Response) => {
 
     // Check if user is the author
     if (post.author.toString() !== userId) {
-      return res.status(403).json({
+      res.status(403).json({
         success: false,
         message: 'You can only delete your own posts',
       });
+      return;
     }
 
     // Soft delete

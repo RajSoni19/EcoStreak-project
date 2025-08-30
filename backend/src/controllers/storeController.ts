@@ -250,7 +250,7 @@ export const purchaseProduct = async (req: Request, res: Response): Promise<void
     const totalCost = product.pointsCost * quantity;
     const user = await User.findById(userId);
 
-    if (!user || (user.points || 0) < totalCost) {
+    if (!user || (user.totalPoints || 0) < totalCost) {
       res.status(400).json({
         success: false,
         message: 'Insufficient points'
@@ -259,7 +259,7 @@ export const purchaseProduct = async (req: Request, res: Response): Promise<void
     }
 
     // Deduct points from user
-    user.points = (user.points || 0) - totalCost;
+    user.totalPoints = (user.totalPoints || 0) - totalCost;
     await user.save();
 
     // Update product stock
@@ -273,7 +273,7 @@ export const purchaseProduct = async (req: Request, res: Response): Promise<void
         product,
         quantity,
         pointsSpent: totalCost,
-        remainingPoints: user.points
+        remainingPoints: user.totalPoints
       }
     });
 

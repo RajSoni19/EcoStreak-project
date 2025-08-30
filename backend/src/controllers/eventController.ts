@@ -208,7 +208,7 @@ export const joinEvent = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    if (event.participants.length >= event.maxParticipants) {
+    if (event.maxParticipants && event.participants.length >= event.maxParticipants) {
       res.status(400).json({
         success: false,
         message: 'Event is full'
